@@ -17,13 +17,13 @@ class MapErrorAsNextProcessor<T>(parentPublisher: Publisher<T>, private val bloc
         private val block: MapErrorAsNextProcessorBlock<T>
     ) : ProcessorSubscription<T, T>(subscriber) {
 
-
         override fun onNext(t: T, subscriber: Subscriber<in T>) {
             subscriber.onNext(t)
         }
 
         override fun onError(t: Throwable) {
             subscriber.onNext(block(t))
+            subscriber.onComplete()
         }
     }
 }

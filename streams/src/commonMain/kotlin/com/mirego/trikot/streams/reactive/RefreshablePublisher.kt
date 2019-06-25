@@ -34,4 +34,3 @@ class RefreshablePublisher<T>(private val executionBlock: RefreshablePublisherEx
         cancellableManagerProvider.cancelPreviousAndCreate()
     }
 }
-

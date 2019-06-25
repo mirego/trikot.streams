@@ -2,7 +2,21 @@ package com.mirego.trikot.streams.reactive
 
 import com.mirego.trikot.streams.cancellable.CancellableManager
 import com.mirego.trikot.streams.concurrent.dispatchQueue.DispatchQueue
-import com.mirego.trikot.streams.reactive.processors.*
+import com.mirego.trikot.streams.reactive.processors.MapProcessor
+import com.mirego.trikot.streams.reactive.processors.MapProcessorBlock
+import com.mirego.trikot.streams.reactive.processors.SwitchMapProcessor
+import com.mirego.trikot.streams.reactive.processors.SwitchMapProcessorBlock
+import com.mirego.trikot.streams.reactive.processors.ObserveOnProcessor
+import com.mirego.trikot.streams.reactive.processors.SubscribeOnProcessor
+import com.mirego.trikot.streams.reactive.processors.FirstProcessor
+import com.mirego.trikot.streams.reactive.processors.WithCancellableManagerProcessor
+import com.mirego.trikot.streams.reactive.processors.WithCancellableManagerProcessorResultType
+import com.mirego.trikot.streams.reactive.processors.FilterProcessorBlock
+import com.mirego.trikot.streams.reactive.processors.FilterProcessor
+import com.mirego.trikot.streams.reactive.processors.SharedProcessor
+import com.mirego.trikot.streams.reactive.processors.MapErrorAsNextProcessor
+import com.mirego.trikot.streams.reactive.processors.MapErrorAsNextProcessorBlock
+import com.mirego.trikot.streams.reactive.processors.DistinctUntilChangedProcessor
 import org.reactivestreams.Publisher
 import org.reactivestreams.Subscriber
 
@@ -61,6 +75,10 @@ fun <T> Publisher<T>.shared(): Publisher<T> {
 
 fun <T> Publisher<T>.mapErrorAsNext(block: MapErrorAsNextProcessorBlock<T>): Publisher<T> {
     return MapErrorAsNextProcessor(this, block)
+}
+
+fun <T> Publisher<T>.distinctUntilChanged(): Publisher<T> {
+    return DistinctUntilChangedProcessor(this)
 }
 
 fun <T> Publisher<T>.asMutable(): MutablePublisher<T> {

@@ -97,6 +97,21 @@ ColdPublisher({ cancelableManager ->
 })
 ```
 
+### SourcedPublisher
+Sourced publisher publishes a value from another publisher. The source publisher can be switched if needed. Like all publishers, subscribes on the source Publisher when a subscription is active on the SourcedPublisher.
+
+```kotlin
+val sourcedPublisher = SourcedPublisher(null)
+myPublisher.subscribe(cancellableManager) { print(it) }
+sourcedPublisher.source = publisherFactory.create(false)
+sourcedPublisher.source = publisherFactory.create(true)
+```
+*Output*
+```
+false
+true
+```
+
 ### CombineLatest
 CombineLatest combines the result of up to 5 publishers and dispatch them when all publishers have a value. CombineLatest values are destructurizable data class. Use the provided companion object to create a new CombineLatest publisher: `CombineLatest.combine[X](...): CombineLatest`
 

@@ -59,7 +59,7 @@ interface UsersRepository {
 }
 
 class AndroidUsersViewModel(usersRepo: UsersRepository) : ViewModel() {
-    val users: LiveData<List<User>> = usersRepo.asLiveData()
+    val users: LiveData<List<User>> = usersRepo.users.asLiveData()
 }
 
 class UsersFragment : Fragment() {

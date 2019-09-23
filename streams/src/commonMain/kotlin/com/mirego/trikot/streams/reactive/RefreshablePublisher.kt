@@ -7,7 +7,7 @@ import org.reactivestreams.Publisher
 
 typealias RefreshablePublisherExecutionBlock<T> = (CancellableManager, Boolean) -> Publisher<T>
 
-class RefreshablePublisher<T>(private val executionBlock: RefreshablePublisherExecutionBlock<T>, value: T? = null) : BehaviorSubjectImpl<T>(value) {
+class RefreshablePublisher<T>(private val executionBlock: RefreshablePublisherExecutionBlock<T>, value: T? = null, name: String? = null) : BehaviorSubjectImpl<T>(value, name) {
     private val cancellableManagerProvider = CancellableManagerProvider()
     private val shouldRefresh = AtomicReference(false)
 
@@ -42,5 +42,9 @@ class RefreshablePublisher<T>(private val executionBlock: RefreshablePublisherEx
 
     private fun doCancel() {
         cancellableManagerProvider.cancelPreviousAndCreate()
+    }
+
+    override fun describeProperties(): Map<String, Any?> {
+        return super.describeProperties() + mapOf("shouldRefresh" to shouldRefresh.value)
     }
 }

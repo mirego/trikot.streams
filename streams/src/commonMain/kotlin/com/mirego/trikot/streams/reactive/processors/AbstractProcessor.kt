@@ -1,17 +1,19 @@
 package com.mirego.trikot.streams.reactive.processors
 
 import com.mirego.trikot.foundation.concurrent.AtomicReference
+import com.mirego.trikot.streams.reactive.PublisherDescribable
 import org.reactivestreams.Processor
 import org.reactivestreams.Publisher
 import org.reactivestreams.Subscriber
 import org.reactivestreams.Subscription
 
 abstract class AbstractProcessor<T, R>(
-    val parentPublisher: Publisher<T>
+    val parentPublisher: Publisher<T>,
+    describableName: String? = null
 ) :
-    Processor<T, R> {
-    private val subscription: AtomicReference<Subscription?> =
-        AtomicReference(null)
+    Processor<T, R>, PublisherDescribable {
+
+    override val name: String = describableName?.let { it } ?: this::class.toString()
 
     abstract fun createSubscription(subscriber: Subscriber<in R>): ProcessorSubscription<T, R>
 
@@ -32,5 +34,9 @@ abstract class AbstractProcessor<T, R>(
     }
 
     override fun onNext(t: T) {
+    }
+
+    override fun describeProperties(): Map<String, Any?> {
+        return mapOf("parentPublisher" to parentPublisher)
     }
 }

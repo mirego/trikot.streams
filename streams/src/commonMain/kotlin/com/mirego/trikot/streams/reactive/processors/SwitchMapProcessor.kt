@@ -2,6 +2,7 @@ package com.mirego.trikot.streams.reactive.processors
 
 import com.mirego.trikot.foundation.concurrent.AtomicReference
 import com.mirego.trikot.streams.cancellable.CancellableManagerProvider
+import com.mirego.trikot.streams.reactive.PublisherDescribable
 import com.mirego.trikot.streams.reactive.subscribe
 import org.reactivestreams.Publisher
 import org.reactivestreams.Subscriber
@@ -9,17 +10,18 @@ import org.reactivestreams.Subscription
 
 typealias SwitchMapProcessorBlock<T, R> = (T) -> Publisher<R>
 
-class SwitchMapProcessor<T, R>(parentPublisher: Publisher<T>, private var block: SwitchMapProcessorBlock<T, R>) :
-    AbstractProcessor<T, R>(parentPublisher) {
+class SwitchMapProcessor<T, R>(parentPublisher: Publisher<T>, private var block: SwitchMapProcessorBlock<T, R>, name: String? = null) :
+    AbstractProcessor<T, R>(parentPublisher, name) {
 
     override fun createSubscription(subscriber: Subscriber<in R>): ProcessorSubscription<T, R> {
-        return SwitchMapProcessorSubscription(subscriber, block)
+        return SwitchMapProcessorSubscription(subscriber, block, this)
     }
 
     class SwitchMapProcessorSubscription<T, R>(
         private val subscriber: Subscriber<in R>,
-        private val block: SwitchMapProcessorBlock<T, R>
-    ) : ProcessorSubscription<T, R>(subscriber) {
+        private val block: SwitchMapProcessorBlock<T, R>,
+        publisherDescribable: PublisherDescribable
+    ) : ProcessorSubscription<T, R>(subscriber, publisherDescribable) {
         private val cancellableManagerProvider = CancellableManagerProvider()
         private val isCompleted = AtomicReference<Boolean>(false)
         private val isChildCompleted = AtomicReference<Boolean>(false)

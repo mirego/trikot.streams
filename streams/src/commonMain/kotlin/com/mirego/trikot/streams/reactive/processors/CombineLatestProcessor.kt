@@ -3,6 +3,7 @@ package com.mirego.trikot.streams.reactive.processors
 import com.mirego.trikot.foundation.concurrent.AtomicListReference
 import com.mirego.trikot.foundation.concurrent.AtomicReference
 import com.mirego.trikot.streams.cancellable.CancellableManagerProvider
+import com.mirego.trikot.streams.reactive.PublisherDescribable
 import com.mirego.trikot.streams.reactive.subscribe
 import org.reactivestreams.Publisher
 import org.reactivestreams.Subscriber
@@ -10,18 +11,20 @@ import org.reactivestreams.Subscription
 
 class CombineLatestProcessor<T>(
     parentPublisher: Publisher<T>,
-    private val publishers: List<Publisher<T>>
+    private val publishers: List<Publisher<T>>,
+    name: String? = null
 ) :
-    AbstractProcessor<T, List<T?>>(parentPublisher) {
+    AbstractProcessor<T, List<T?>>(parentPublisher, name) {
 
     override fun createSubscription(subscriber: Subscriber<in List<T?>>): ProcessorSubscription<T, List<T?>> {
-        return CombineProcessorProcessorSubscription(subscriber, publishers)
+        return CombineProcessorProcessorSubscription(subscriber, publishers, this)
     }
 
     class CombineProcessorProcessorSubscription<T>(
         private val subscriber: Subscriber<in List<T?>>,
-        private val publishers: List<Publisher<T>>
-    ) : ProcessorSubscription<T, List<T?>>(subscriber) {
+        private val publishers: List<Publisher<T>>,
+        publisherDescribable: PublisherDescribable
+    ) : ProcessorSubscription<T, List<T?>>(subscriber, publisherDescribable) {
         private val cancellableManagerProvider = CancellableManagerProvider()
         private val publishersResult = AtomicListReference<PublisherResult<T>>()
         private val parentPublisherResultIndex = 0

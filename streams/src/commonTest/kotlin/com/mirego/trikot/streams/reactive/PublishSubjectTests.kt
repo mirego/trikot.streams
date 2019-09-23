@@ -86,6 +86,20 @@ class PublishSubjectTests {
         }
     }
 
+    @Test
+    fun canBeDescribed() {
+        publishSubject = Publishers.publishSubject("Name")
+        publishSubject.value = "ABC"
+        publishSubject.subscribe(CancellableManager()) {}
+        publishSubject.subscribe(CancellableManager()) {}
+
+        val description = (publishSubject as PublisherDescribable).describeProperties()
+        assertEquals("Name", (publishSubject as PublisherDescribable).name)
+        assertEquals("ABC", description["value"])
+        assertEquals(false, description["isCompleted"])
+        assertEquals(2, description["subscriptionCount"])
+    }
+
     fun retreiveValue(block: (String) -> Unit, cancellableManager: CancellableManager = CancellableManager()) {
         publishSubject.first().subscribe(cancellableManager, block)
     }

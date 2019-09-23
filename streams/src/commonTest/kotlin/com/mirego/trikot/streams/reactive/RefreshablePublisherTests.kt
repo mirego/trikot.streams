@@ -107,4 +107,19 @@ class RefreshablePublisherTests {
         assertTrue { executed }
         assertTrue { refreshValue }
     }
+
+    @Test
+    fun canBeDescribed() {
+        val publisher = Publishers.behaviorSubject("expectedValue")
+        val refreshable = RefreshablePublisher<String>({ _, _ ->
+            publisher
+        })
+        refreshable.refresh()
+
+        val description = (refreshable as PublisherDescribable).describeProperties()
+        assertEquals(RefreshablePublisher::class.toString(), (refreshable as PublisherDescribable).name)
+        assertEquals(true, description["shouldRefresh"])
+        assertEquals(null, description["value"])
+        assertEquals(0, description["subscriptionCount"])
+    }
 }

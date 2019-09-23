@@ -43,47 +43,59 @@ fun <T> Publisher<T>.subscribe(
 }
 
 fun <T, R> Publisher<T>.map(block: MapProcessorBlock<T, R>): Publisher<R> {
-    return MapProcessor(this, block)
+    return map(null, block)
 }
 
-fun <T, R> Publisher<T>.switchMap(block: SwitchMapProcessorBlock<T, R>): Publisher<R> {
-    return SwitchMapProcessor(this, block)
+fun <T, R> Publisher<T>.map(name: String? = null, block: MapProcessorBlock<T, R>): Publisher<R> {
+    return MapProcessor(this, block, name)
+}
+
+fun <T, R> Publisher<T>.switchMap(name: String? = null, block: SwitchMapProcessorBlock<T, R>): Publisher<R> {
+    return SwitchMapProcessor(this, block, name)
 }
 
 fun <T> Publisher<T>.observeOn(dispatcher: DispatchQueue): Publisher<T> {
-    return ObserveOnProcessor(this, dispatcher)
+    return observeOn(null, dispatcher)
+}
+
+fun <T> Publisher<T>.observeOn(name: String? = null, dispatcher: DispatchQueue): Publisher<T> {
+    return ObserveOnProcessor(this, dispatcher, name)
 }
 
 fun <T> Publisher<T>.subscribeOn(dispatcher: DispatchQueue): Publisher<T> {
-    return SubscribeOnProcessor(this, dispatcher)
+    return subscribeOn(null, dispatcher)
 }
 
-fun <T> Publisher<T>.first(): Publisher<T> {
-    return FirstProcessor(this)
+fun <T> Publisher<T>.subscribeOn(name: String? = null, dispatcher: DispatchQueue): Publisher<T> {
+    return SubscribeOnProcessor(this, dispatcher, name)
 }
 
-fun <T> Publisher<T>.withCancellableManager(): Publisher<WithCancellableManagerProcessorResultType<T>> {
-    return WithCancellableManagerProcessor(this)
+fun <T> Publisher<T>.first(name: String? = null): Publisher<T> {
+    return FirstProcessor(this, name)
 }
 
-fun <T> Publisher<T>.filter(block: FilterProcessorBlock<T>): Publisher<T> {
-    return FilterProcessor(this, block)
+fun <T> Publisher<T>.withCancellableManager(name: String? = null): Publisher<WithCancellableManagerProcessorResultType<T>> {
+    return WithCancellableManagerProcessor(this, name)
 }
 
-fun <T> Publisher<T>.shared(): Publisher<T> {
-    return SharedProcessor(this)
+fun <T> Publisher<T>.filter(name: String? = null, block: FilterProcessorBlock<T>): Publisher<T> {
+    return FilterProcessor(this, block, name)
 }
 
-fun <T> Publisher<T>.onErrorReturn(block: OnErrorReturnProcessorBlock<T>): Publisher<T> {
-    return OnErrorReturnProcessor(this, block)
+fun <T> Publisher<T>.shared(name: String? = null): Publisher<T> {
+    return SharedProcessor(this, name)
 }
 
-fun <T> Publisher<T>.distinctUntilChanged(): Publisher<T> {
-    return DistinctUntilChangedProcessor(this)
+fun <T> Publisher<T>.onErrorReturn(name: String? = null, block: OnErrorReturnProcessorBlock<T>): Publisher<T> {
+    return OnErrorReturnProcessor(this, block, name)
 }
 
-fun <T> Publisher<T>.withPreviousValue(): Publisher<Pair<T?, T>> {
-    return WithPreviousValueProcessor(this)
+fun <T> Publisher<T>.distinctUntilChanged(name: String? = null): Publisher<T> {
+    return DistinctUntilChangedProcessor(this, name)
+}
+
+fun <T> Publisher<T>.withPreviousValue(name: String? = null): Publisher<Pair<T?, T>> {
+    return WithPreviousValueProcessor(this, name)
 }
 
 fun <T> Publisher<T>.asMutable(): BehaviorSubject<T> {

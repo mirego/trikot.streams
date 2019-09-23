@@ -15,7 +15,7 @@ class ObserveOnProcessorTests {
         val dispatchQueue = DispatchQueueMock()
         val publisher = Publishers.behaviorSubject("a")
 
-        publisher.observeOn(dispatchQueue).subscribe(CancellableManager()) {}
+        publisher.observeOn(dispatchQueue as DispatchQueue).subscribe(CancellableManager()) {}
 
         assertNotNull(dispatchQueue.block)
     }

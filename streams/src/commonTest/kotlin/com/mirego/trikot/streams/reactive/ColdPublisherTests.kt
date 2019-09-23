@@ -61,4 +61,19 @@ class ColdPublisherTests {
 
         assertEquals(2, executionCount)
     }
+
+    @Test
+    fun canBeDescribed() {
+        val publisher = Publishers.behaviorSubject("expectedValue")
+        val coldPublisher = ColdPublisher<String>({
+            publisher
+        })
+
+        coldPublisher.subscribe(CancellableManager()) {}
+
+        val description = (coldPublisher as PublisherDescribable).describeProperties()
+        assertEquals(ColdPublisher::class.toString(), (coldPublisher as PublisherDescribable).name)
+        assertEquals("expectedValue", description["value"])
+        assertEquals(1, description["subscriptionCount"])
+    }
 }

@@ -2,7 +2,11 @@ package com.mirego.trikot.streams.reactive.processors
 
 import com.mirego.trikot.streams.cancellable.CancellableManager
 import com.mirego.trikot.streams.reactive.BehaviorSubjectImpl
+import com.mirego.trikot.streams.reactive.PublisherDescribable
+import com.mirego.trikot.streams.reactive.helpers.SubscriberMock
 import com.mirego.trikot.streams.reactive.subscribe
+import org.reactivestreams.Subscriber
+import org.reactivestreams.Subscription
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -129,6 +133,22 @@ class CombineLatestProcessorTests {
         assertEquals(expectedError, receivedError)
         assertFalse { firstPublisher.getHasSubscriptions }
         assertFalse { secondPublisher.getHasSubscriptions }
+    }
+
+    @Test
+    fun subscriptionCanBeDescribed() {
+        val firstPublisher = MockPublisher("a")
+        val secondPublisher = MockPublisher("b")
+        val subscriberMock = SubscriberMock<Pair<String?, String?>>()
+        val combiner = firstPublisher.combine(secondPublisher)
+            combiner.subscribe(subscriberMock)
+
+        //val describable = (subscriberMock.subscription as PublisherDescribable)
+        //val properties = describable.describeProperties()
+        assertEquals("CombineLatestSubscription", subscriberMock.describable?.name)
+
+        //assertEquals(listOf(firstPublisher, secondPublisher), describable.describeProperties())
+        //describable.describeProperties()
     }
 
     class MockPublisher(initialValue: String? = null) : BehaviorSubjectImpl<String>(initialValue) {

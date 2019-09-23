@@ -6,7 +6,7 @@ import org.reactivestreams.Processor
 import org.reactivestreams.Publisher
 import org.reactivestreams.Subscription
 
-class SharedProcessor<T>(private val parentPublisher: Publisher<T>) : BehaviorSubjectImpl<T>(), Processor<T, T> {
+class SharedProcessor<T>(private val parentPublisher: Publisher<T>, name: String? = null) : BehaviorSubjectImpl<T>(null, name), Processor<T, T> {
 
     private val cancellableManagerProvider = CancellableManagerProvider()
 
@@ -31,4 +31,8 @@ class SharedProcessor<T>(private val parentPublisher: Publisher<T>) : BehaviorSu
     override fun onError(t: Throwable) = let { error = t }
 
     override fun onComplete() = complete()
+
+    override fun describeProperties(): Map<String, Any?> {
+        return super.describeProperties() + mapOf("parentPublisher" to parentPublisher)
+    }
 }

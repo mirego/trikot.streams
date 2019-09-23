@@ -1,8 +1,9 @@
 package com.mirego.trikot.streams.reactive
 
 open class BehaviorSubjectImpl<T>(
-    initialValue: T? = null
-) : PublishSubjectImpl<T>(), BehaviorSubject<T> {
+    initialValue: T? = null,
+    name: String? = null
+) : PublishSubjectImpl<T>(name), BehaviorSubject<T> {
 
     init {
         this.value = initialValue

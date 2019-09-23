@@ -6,7 +6,7 @@ import com.mirego.trikot.foundation.concurrent.AtomicReference
 import com.mirego.trikot.foundation.concurrent.dispatchQueue.DispatchQueue
 import com.mirego.trikot.streams.reactive.BehaviorSubjectImpl
 
-abstract class BaseExecutablePublisher<T>(private val executionQueue: DispatchQueue = StreamsConfiguration.publisherExecutionDispatchQueue) : ExecutablePublisher<T>, BehaviorSubjectImpl<T>(null) {
+abstract class BaseExecutablePublisher<T>(private val executionQueue: DispatchQueue = StreamsConfiguration.publisherExecutionDispatchQueue, name: String? = null) : ExecutablePublisher<T>, BehaviorSubjectImpl<T>(null, name) {
     protected val cancellableManager = CancellableManager()
     private val isStarted = AtomicReference(false)
 

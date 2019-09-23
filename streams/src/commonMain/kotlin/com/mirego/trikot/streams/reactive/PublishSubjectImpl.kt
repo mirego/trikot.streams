@@ -4,7 +4,7 @@ import com.mirego.trikot.foundation.concurrent.AtomicListReference
 import com.mirego.trikot.foundation.concurrent.AtomicReference
 import org.reactivestreams.Subscriber
 
-open class PublishSubjectImpl<T> : PublishSubject<T> {
+open class PublishSubjectImpl<T>(describableName: String? = null) : PublishSubject<T>, PublisherDescribable {
     private val subscriptions = AtomicListReference<PublisherSubscription<T>>()
     private val atomicValue = AtomicReference<T?>(null)
     private val atomicError = AtomicReference<Throwable?>(null)
@@ -17,6 +17,8 @@ open class PublishSubjectImpl<T> : PublishSubject<T> {
     }
 
     protected val completed get() = isCompleted.value
+
+    override val name: String = describableName?.let { it } ?: this::class.toString()
 
     override var value: T?
         get() {
@@ -89,5 +91,14 @@ open class PublishSubjectImpl<T> : PublishSubject<T> {
     }
 
     protected open fun onNoSubscription() {
+    }
+
+    override fun describeProperties(): Map<String, Any?> {
+        return mapOf(
+            "value" to value,
+            "error" to error,
+            "isCompleted" to completed,
+            "subscriptionCount" to subscriptions.value.size
+        )
     }
 }

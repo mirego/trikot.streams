@@ -1,6 +1,8 @@
 package com.mirego.trikot.streams.reactive
 
+import com.mirego.trikot.foundation.FoundationConfiguration
 import com.mirego.trikot.foundation.concurrent.dispatchQueue.DispatchQueue
+import com.mirego.trikot.foundation.timers.TimerFactory
 import com.mirego.trikot.streams.cancellable.CancellableManager
 import com.mirego.trikot.streams.reactive.processors.ConcatProcessor
 import com.mirego.trikot.streams.reactive.processors.DebounceProcessor
@@ -109,6 +111,9 @@ fun <T, R> Publisher<T>.filterNotNull(block: ((T) -> R?)): Publisher<R> {
 }
 
 @ExperimentalTime
-fun <T> Publisher<T>.debounce(delayMs: Duration): Publisher<T> {
-    return DebounceProcessor(this, delayMs)
+fun <T> Publisher<T>.debounce(
+    delayMs: Duration,
+    timerFactory: TimerFactory = FoundationConfiguration.timerFactory
+): Publisher<T> {
+    return DebounceProcessor(this, delayMs, timerFactory)
 }

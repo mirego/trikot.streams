@@ -112,8 +112,8 @@ fun <T, R> Publisher<T>.filterNotNull(block: ((T) -> R?)): Publisher<R> {
 
 @ExperimentalTime
 fun <T> Publisher<T>.debounce(
-    delayMs: Duration,
+    timeout: Duration,
     timerFactory: TimerFactory = FoundationConfiguration.timerFactory
 ): Publisher<T> {
-    return DebounceProcessor(this, delayMs, timerFactory)
+    return DebounceProcessor(this, timeout, timerFactory)
 }

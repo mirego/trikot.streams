@@ -12,24 +12,24 @@ import kotlin.time.ExperimentalTime
 @ExperimentalTime
 class DebounceProcessor<T>(
     parentPublisher: Publisher<T>,
-    private val delayMs: Duration,
+    private val timeout: Duration,
     private val timerFactory: TimerFactory = FoundationConfiguration.timerFactory
 ) :
     AbstractProcessor<T, T>(parentPublisher) {
     override fun createSubscription(subscriber: Subscriber<in T>): ProcessorSubscription<T, T> {
-        return DebounceProcessorSubscription(subscriber, delayMs,timerFactory)
+        return DebounceProcessorSubscription(subscriber, timeout, timerFactory)
     }
 
     class DebounceProcessorSubscription<T>(
         subscriber: Subscriber<in T>,
-        private val delayMs: Duration,
+        private val timeout: Duration,
         private val timerFactory: TimerFactory = FoundationConfiguration.timerFactory
     ) : ProcessorSubscription<T, T>(subscriber) {
         private val cancellableManagerProvider = CancellableManagerProvider()
 
         override fun onNext(t: T, subscriber: Subscriber<in T>) {
             cancellableManagerProvider.cancelPreviousAndCreate().also { cancellableManager ->
-                timerFactory.single(delayMs) { subscriber.onNext(t) }.also {
+                timerFactory.single(timeout) { subscriber.onNext(t) }.also {
                     cancellableManager.add { it.cancel() }
                 }
             }

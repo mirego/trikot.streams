@@ -38,11 +38,12 @@ class MapProcessorTests {
     @Test
     fun testMappingAnyException() {
         val publisher = Publishers.behaviorSubject("a")
-        var receivedException: StreamsProcessorException? = null
 
         assertFailsWith(IllegalStateException::class) {
-            publisher.map { throw IllegalStateException() }.subscribe(CancellableManager(), onNext = {
-            }, onError = { receivedException = it as StreamsProcessorException })
+            publisher.map { throw IllegalStateException() }.subscribe(CancellableManager(),
+                onNext = {},
+                onError = {}
+            )
         }
     }
 }

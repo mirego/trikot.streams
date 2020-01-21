@@ -32,7 +32,7 @@ job("$context.jobFullName-streams") {
         gradle {
             useWrapper()
             makeExecutable()
-            tasks(':streams:release')
+            tasks(':streams:release :coroutines-extensions:release')
             switches('-i -s')
         }
     }

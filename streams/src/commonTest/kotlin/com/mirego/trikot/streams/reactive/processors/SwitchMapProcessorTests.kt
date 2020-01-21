@@ -95,11 +95,12 @@ class SwitchMapProcessorTests {
     @Test
     fun testMappingAnyException() {
         val publisher = Publishers.behaviorSubject("a")
-        var receivedException: StreamsProcessorException? = null
 
         assertFailsWith(IllegalStateException::class) {
-            publisher.switchMap<String, String> { throw IllegalStateException() }.subscribe(CancellableManager(), onNext = {
-            }, onError = { receivedException = it as StreamsProcessorException })
+            publisher.switchMap<String, String> { throw IllegalStateException() }.subscribe(CancellableManager(),
+                onNext = {},
+                onError = {}
+            )
         }
     }
 

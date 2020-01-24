@@ -1,5 +1,7 @@
 package org.reactivestreams
 
+import kotlin.js.JsName
+
 /**
  * A [Publisher] is a provider of a potentially unbounded number of sequenced elements, publishing them according to
  * the demand received from its [Subscriber](s).

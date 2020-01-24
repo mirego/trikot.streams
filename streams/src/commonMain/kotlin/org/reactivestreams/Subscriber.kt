@@ -1,5 +1,7 @@
 package org.reactivestreams
 
+import kotlin.js.JsName
+
 /**
  * Will receive call to [.onSubscribe] once after passing an instance of [Subscriber] to [Publisher.subscribe].
  *

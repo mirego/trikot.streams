@@ -1,5 +1,7 @@
 package org.reactivestreams
 
+import kotlin.js.JsName
+
 interface Subscription {
     /**
      * No events will be sent by a [Publisher] until demand is signaled via this method.

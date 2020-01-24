@@ -34,6 +34,7 @@ interface Subscriber<T> {
      * @param s
      * [Subscription] that allows requesting data via [Subscription.request]
      */
+    @JsName("onSubscribe")
     fun onSubscribe(s: Subscription)
 
     /**
@@ -41,6 +42,7 @@ interface Subscriber<T> {
      *
      * @param t the element signaled
      */
+    @JsName("onNext")
     fun onNext(t: T)
 
     /**
@@ -51,6 +53,7 @@ interface Subscriber<T> {
      *
      * @param t the throwable signaled
      */
+    @JsName("onError")
     fun onError(t: Throwable)
 
     /**
@@ -59,5 +62,6 @@ interface Subscriber<T> {
      *
      * No further events will be sent even if [Subscription.request] is invoked again.
      */
+    @JsName("onComplete")
     fun onComplete()
 }

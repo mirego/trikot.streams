@@ -30,5 +30,6 @@ interface Publisher<T> {
      *
      * @param s the [Subscriber] that will consume signals from this [Publisher]
      */
+    @JsName("subscribe")
     fun subscribe(s: Subscriber<in T>)
 }

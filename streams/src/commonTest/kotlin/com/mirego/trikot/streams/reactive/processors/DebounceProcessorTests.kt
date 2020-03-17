@@ -52,19 +52,24 @@ class DebounceProcessorTests {
 
 @ExperimentalTime
 class MockTimerFactory(private val mockTimer: MockTimer) : TimerFactory {
+    var repeatableCall = 0
+    var singleCall = 0
+
     override fun repeatable(delay: Duration, block: () -> Unit): Timer {
+        repeatableCall++
         mockTimer.block = block
         return mockTimer
     }
 
     override fun single(delay: Duration, block: () -> Unit): Timer {
+        singleCall++
         mockTimer.block = block
         return mockTimer
     }
 }
 
 class MockTimer : Timer {
-
+    var isCancelled = false
     var block: () -> Unit = NoBlock
 
     fun executeBlock() {
@@ -72,6 +77,7 @@ class MockTimer : Timer {
     }
 
     override fun cancel() {
+        isCancelled = true
     }
 }
 

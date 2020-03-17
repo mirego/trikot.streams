@@ -30,13 +30,12 @@ class TimeoutProcessor<T>(private val duration: Duration, private val timerFacto
 
         override fun onCancel(s: Subscription) {
             super.onCancel(s)
-            cancellableManagerProvider.cancelPreviousAndCreate()
+            cancellableManagerProvider.cancel()
         }
 
         private fun resetTimer() {
             val cancellableManager = cancellableManagerProvider.cancelPreviousAndCreate()
             val timer = timerFactory.single(duration) {
-                cancelActiveSubscription()
                 onError(StreamsTimeoutException(timeoutMessage))
             }
             cancellableManager.add { timer.cancel() }
@@ -45,11 +44,18 @@ class TimeoutProcessor<T>(private val duration: Duration, private val timerFacto
         override fun onNext(t: T, subscriber: Subscriber<in T>) {
             cancellableManagerProvider.cancelPreviousAndCreate()
             subscriber.onNext(t)
+            resetTimer()
         }
 
         override fun onError(t: Throwable) {
             cancellableManagerProvider.cancelPreviousAndCreate()
+            cancelActiveSubscription()
             super.onError(t)
+        }
+
+        override fun onComplete() {
+            cancellableManagerProvider.cancelPreviousAndCreate()
+            super.onComplete()
         }
     }
 }

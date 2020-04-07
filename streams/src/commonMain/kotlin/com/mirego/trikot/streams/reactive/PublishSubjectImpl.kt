@@ -60,7 +60,9 @@ open class PublishSubjectImpl<T> : PublishSubject<T> {
     override fun subscribe(s: Subscriber<in T>) {
         val subscription = PublisherSubscription(s, onPublisherSubscriptionCancelled)
         s.onSubscribe(subscription)
-        addSubscription(subscription)
+        serialQueue.dispatch {
+            addSubscription(subscription)
+        }
     }
 
     private fun removeSubscription(publisherSubscription: PublisherSubscription<T>) {
@@ -78,12 +80,10 @@ open class PublishSubjectImpl<T> : PublishSubject<T> {
             if (!subscription.isCancelled) {
                 onNewSubscription(subscription)
                 if (!subscription.isCancelled) {
-                    serialQueue.dispatch {
-                        if (this.completed) {
-                            subscription.dispatchCompleted()
-                        } else if (subscriptions.add(subscription).count() == 1) {
-                            onFirstSubscription()
-                        }
+                    if (this.completed) {
+                        subscription.dispatchCompleted()
+                    } else if (subscriptions.add(subscription).count() == 1) {
+                        onFirstSubscription()
                     }
                 }
             }

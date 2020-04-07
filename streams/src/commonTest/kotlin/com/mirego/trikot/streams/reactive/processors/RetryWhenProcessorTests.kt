@@ -119,15 +119,6 @@ class RetryWhenProcessorTests {
             }
         )
 
-        originalPublisher.retryWhen { Publishers.error(ERROR_2) }.subscribe(CancellableManager(),
-            onNext = {
-                receivedValueSubscription = it
-            },
-            onError = {
-                receivedErrorSubscription = it
-            }
-        )
-
         assertEquals(ERROR_2, receivedErrorSubscription)
         assertNull(receivedValueSubscription)
     }

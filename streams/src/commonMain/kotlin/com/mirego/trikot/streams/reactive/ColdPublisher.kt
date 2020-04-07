@@ -27,6 +27,8 @@ class ColdPublisher<T>(private val executionBlock: ColdPublisherExecutionBlock<T
     override fun onNoSubscription() {
         super.onNoSubscription()
         cancellableManagerProvider.cancelPreviousAndCreate()
-        cleanupValues()
+        if (!completed) {
+            cleanupValues()
+        }
     }
 }

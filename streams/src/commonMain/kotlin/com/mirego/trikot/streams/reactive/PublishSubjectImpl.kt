@@ -89,12 +89,11 @@ open class PublishSubjectImpl<T> : PublishSubject<T> {
             }
     }
 
-    fun cleanupValues() {
+    protected fun cleanupValues() {
         if (hasSubscriptions) throw IllegalStateException("Cannot clean values when publisher has subscribers")
         serialQueue.dispatch {
             atomicValue.setOrThrow(atomicValue.value, null)
             atomicError.setOrThrow(atomicError.value, null)
-            isCompleted.setOrThrow(isCompleted.value, false)
         }
     }
 

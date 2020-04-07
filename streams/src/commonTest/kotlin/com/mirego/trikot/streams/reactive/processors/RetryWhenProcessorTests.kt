@@ -2,9 +2,18 @@ package com.mirego.trikot.streams.reactive.processors
 
 import com.mirego.trikot.foundation.concurrent.AtomicReference
 import com.mirego.trikot.streams.cancellable.CancellableManager
-import com.mirego.trikot.streams.reactive.*
-import org.reactivestreams.Publisher
-import kotlin.test.*
+import com.mirego.trikot.streams.reactive.ColdPublisher
+import com.mirego.trikot.streams.reactive.MockPublisher
+import com.mirego.trikot.streams.reactive.Publishers
+import com.mirego.trikot.streams.reactive.just
+import com.mirego.trikot.streams.reactive.map
+import com.mirego.trikot.streams.reactive.retryWhen
+import com.mirego.trikot.streams.reactive.subscribe
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class RetryWhenProcessorTests {
     companion object {
@@ -121,9 +130,5 @@ class RetryWhenProcessorTests {
 
         assertEquals(ERROR_2, receivedErrorSubscription)
         assertNull(receivedValueSubscription)
-    }
-
-    fun refresh() : Publisher<Boolean> {
-
     }
 }

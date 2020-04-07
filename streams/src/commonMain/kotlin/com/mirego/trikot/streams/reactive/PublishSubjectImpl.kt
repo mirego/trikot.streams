@@ -10,7 +10,7 @@ open class PublishSubjectImpl<T> : PublishSubject<T> {
     private val atomicValue = AtomicReference<T?>(null)
     private val atomicError = AtomicReference<Throwable?>(null)
     private val isCompleted = AtomicReference(false)
-    protected val serialQueue = SynchronousSerialQueue()
+    private val serialQueue = SynchronousSerialQueue()
     protected val hasSubscriptions
         get() = subscriptions.value.count() > 0
 

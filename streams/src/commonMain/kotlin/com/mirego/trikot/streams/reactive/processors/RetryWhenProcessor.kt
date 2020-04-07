@@ -3,7 +3,7 @@ package com.mirego.trikot.streams.reactive.processors
 import com.mirego.trikot.foundation.concurrent.AtomicReference
 import com.mirego.trikot.foundation.concurrent.dispatchQueue.SynchronousSerialQueue
 import com.mirego.trikot.streams.cancellable.CancellableManagerProvider
-import com.mirego.trikot.streams.reactive.BehaviorSubject
+import com.mirego.trikot.streams.reactive.PublishSubject
 import com.mirego.trikot.streams.reactive.Publishers
 import com.mirego.trikot.streams.reactive.observeOn
 import com.mirego.trikot.streams.reactive.subscribe
@@ -28,7 +28,7 @@ class RetryWhenSubscription<T>(
     block: RetryWhenPublisherBlock
 ) : ProcessorSubscription<T, T>(subscriber) {
 
-    private val errorPublisher: BehaviorSubject<Throwable> = Publishers.behaviorSubject(null)
+    private val errorPublisher: PublishSubject<Throwable> = Publishers.publishSubject()
     private val serialQueue = SynchronousSerialQueue()
     private val cancellableManagerProvider = CancellableManagerProvider()
     private val resubscribing = AtomicReference(false)
@@ -55,20 +55,22 @@ class RetryWhenSubscription<T>(
     override fun onCancel(s: Subscription) {
         if (!resubscribing.value) {
             cancellableManagerProvider.cancelPreviousAndCreate()
+            super.onCancel(s)
         }
-        super.onCancel(s)
     }
 
     override fun onError(t: Throwable) {
-        errorPublisher.value = t
+        if (!resubscribing.value) {
+            errorPublisher.value = t
+        }
     }
 
     private fun resubscribe() {
         serialQueue.dispatch {
             resubscribing.setOrThrow(resubscribing.value, true)
             cancelActiveSubscription()
-            resubscribing.setOrThrow(resubscribing.value, false)
             parentPublisher.subscribe(this)
+            resubscribing.setOrThrow(resubscribing.value, false)
         }
     }
 }

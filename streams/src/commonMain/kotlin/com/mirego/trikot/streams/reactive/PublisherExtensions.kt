@@ -5,24 +5,7 @@ import com.mirego.trikot.foundation.FoundationConfiguration
 import com.mirego.trikot.foundation.concurrent.dispatchQueue.DispatchQueue
 import com.mirego.trikot.foundation.timers.TimerFactory
 import com.mirego.trikot.streams.cancellable.CancellableManager
-import com.mirego.trikot.streams.reactive.processors.ConcatProcessor
-import com.mirego.trikot.streams.reactive.processors.DebounceProcessor
-import com.mirego.trikot.streams.reactive.processors.DistinctUntilChangedProcessor
-import com.mirego.trikot.streams.reactive.processors.FilterProcessor
-import com.mirego.trikot.streams.reactive.processors.FilterProcessorBlock
-import com.mirego.trikot.streams.reactive.processors.FirstProcessor
-import com.mirego.trikot.streams.reactive.processors.MapProcessor
-import com.mirego.trikot.streams.reactive.processors.MapProcessorBlock
-import com.mirego.trikot.streams.reactive.processors.ObserveOnProcessor
-import com.mirego.trikot.streams.reactive.processors.OnErrorReturnProcessor
-import com.mirego.trikot.streams.reactive.processors.OnErrorReturnProcessorBlock
-import com.mirego.trikot.streams.reactive.processors.SharedProcessor
-import com.mirego.trikot.streams.reactive.processors.SubscribeOnProcessor
-import com.mirego.trikot.streams.reactive.processors.SwitchMapProcessor
-import com.mirego.trikot.streams.reactive.processors.SwitchMapProcessorBlock
-import com.mirego.trikot.streams.reactive.processors.WithCancellableManagerProcessor
-import com.mirego.trikot.streams.reactive.processors.WithCancellableManagerProcessorResultType
-import com.mirego.trikot.streams.reactive.processors.WithPreviousValueProcessor
+import com.mirego.trikot.streams.reactive.processors.*
 import org.reactivestreams.Publisher
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
@@ -121,4 +104,14 @@ fun <T> Publisher<T>.debounce(
     timerFactory: TimerFactory = FoundationConfiguration.timerFactory
 ): Publisher<T> {
     return DebounceProcessor(this, timeout, timerFactory)
+}
+
+/**+
+ * Returns a Publisher that mirrors the source Publisher with the exception of an error.
+ * If the source Publisher calls error, this method will emit the Throwable that caused the error to the Publisher returned from notifier.
+ * If that Publisher calls complete or error then this method will call complete or error on the child subscription.
+ * Otherwise this method will resubscribe to the source Publisher.
+ */
+fun <T> Publisher<T>.retryWhen(block: RetryWhenPublisherBlock): Publisher<T> {
+    return RetryWhenProcessor(this, block)
 }

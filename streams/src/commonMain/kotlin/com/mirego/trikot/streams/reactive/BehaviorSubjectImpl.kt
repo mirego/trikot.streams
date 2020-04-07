@@ -10,7 +10,9 @@ open class BehaviorSubjectImpl<T>(
 
     override fun onNewSubscription(subscription: PublisherSubscription<T>) {
         super.onNewSubscription(subscription)
-        this.value?.let { subscription.dispatchValue(it) }
-        this.error?.let { subscription.dispatchError(it) }
+        serialQueue.dispatch {
+            this.value?.let { subscription.dispatchValue(it) }
+            this.error?.let { subscription.dispatchError(it) }
+        }
     }
 }

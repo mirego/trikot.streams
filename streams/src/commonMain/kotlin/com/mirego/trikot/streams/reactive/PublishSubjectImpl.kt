@@ -10,7 +10,7 @@ open class PublishSubjectImpl<T> : PublishSubject<T> {
     private val atomicValue = AtomicReference<T?>(null)
     private val atomicError = AtomicReference<Throwable?>(null)
     private val isCompleted = AtomicReference(false)
-    private val serialQueue = SynchronousSerialQueue()
+    protected val serialQueue = SynchronousSerialQueue()
     protected val hasSubscriptions
         get() = subscriptions.value.count() > 0
 
@@ -89,11 +89,12 @@ open class PublishSubjectImpl<T> : PublishSubject<T> {
             }
     }
 
-    protected fun cleanupValues() {
+    fun cleanupValues() {
         if (hasSubscriptions) throw IllegalStateException("Cannot clean values when publisher has subscribers")
         serialQueue.dispatch {
             atomicValue.setOrThrow(atomicValue.value, null)
             atomicError.setOrThrow(atomicError.value, null)
+            isCompleted.setOrThrow(isCompleted.value, false)
         }
     }
 

@@ -63,7 +63,7 @@ class ColdPublisherTests {
     }
 
     @Test
-    fun blockIsReexecutedIfResubscribedWhenCompleted() {
+    fun blockIsNotReexecutedIfResubscribedWhenCompleted() {
         var executionCount = 0
 
         val coldPublisher = ColdPublisher {
@@ -77,7 +77,7 @@ class ColdPublisherTests {
         var value = "none"
         coldPublisher.subscribe(CancellableManager()) { value = it }
 
-        assertEquals(2, executionCount)
+        assertEquals(1, executionCount)
         assertEquals("value", value)
     }
 

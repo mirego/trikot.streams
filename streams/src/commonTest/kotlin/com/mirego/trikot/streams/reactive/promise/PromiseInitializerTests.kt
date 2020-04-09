@@ -1,7 +1,6 @@
 package com.mirego.trikot.streams.reactive.promise
 
 import com.mirego.trikot.streams.reactive.Publishers
-import com.mirego.trikot.streams.reactive.promise.exception.EmptyPromiseException
 import com.mirego.trikot.streams.reactive.verify
 import kotlin.test.Test
 

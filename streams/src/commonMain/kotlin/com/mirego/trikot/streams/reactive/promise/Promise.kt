@@ -4,7 +4,6 @@ import com.mirego.trikot.streams.cancellable.CancellableManager
 import com.mirego.trikot.streams.reactive.BehaviorSubjectImpl
 import com.mirego.trikot.streams.reactive.Publishers
 import com.mirego.trikot.streams.reactive.first
-import com.mirego.trikot.streams.reactive.promise.exception.EmptyPromiseException
 import com.mirego.trikot.streams.reactive.subscribe
 import org.reactivestreams.Publisher
 import org.reactivestreams.Subscriber

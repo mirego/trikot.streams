@@ -5,6 +5,7 @@ import com.mirego.trikot.streams.reactive.Publishers
 import com.mirego.trikot.streams.reactive.verify
 import kotlin.test.Test
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class PromiseCancellationTests {
 
@@ -134,4 +135,20 @@ class PromiseCancellationTests {
             )
     }
 
+    @Test
+    fun finallyIsCalledEvenOnCancelledPromise() {
+        val upstream = Publishers.publishSubject<String>()
+        val cancellableManager = CancellableManager().also { it.cancel() }
+        var finallyCalled = false
+
+        Promise.from(upstream, cancellableManager)
+            .finally { finallyCalled = true }
+            .verify(
+                value = null,
+                error = CancelledPromiseException,
+                completed = false
+            )
+
+        assertTrue(finallyCalled)
+    }
 }

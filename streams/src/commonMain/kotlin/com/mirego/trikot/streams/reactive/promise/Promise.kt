@@ -1,38 +1,68 @@
+@file:Suppress("BooleanLiteralArgument")
+
 package com.mirego.trikot.streams.reactive.promise
 
+import com.mirego.trikot.foundation.concurrent.AtomicReference
+import com.mirego.trikot.foundation.concurrent.dispatchQueue.SynchronousSerialQueue
 import com.mirego.trikot.streams.cancellable.CancellableManager
 import com.mirego.trikot.streams.reactive.BehaviorSubjectImpl
 import com.mirego.trikot.streams.reactive.Publishers
-import com.mirego.trikot.streams.reactive.first
+import com.mirego.trikot.streams.reactive.observeOn
 import com.mirego.trikot.streams.reactive.subscribe
 import org.reactivestreams.Publisher
 import org.reactivestreams.Subscriber
 
 class Promise<T> internal constructor(
-    upstream: Publisher<T>
+    upstream: Publisher<T>,
+    cancellableManager: CancellableManager? = null
 ) : Publisher<T> {
 
     private val result = BehaviorSubjectImpl<T>()
-    private val cancellableManager = CancellableManager()
+    private val serialQueue = SynchronousSerialQueue()
+
+    private val isCancelled: AtomicReference<Boolean> = AtomicReference(false)
+    private val internalCancellableManager: CancellableManager = CancellableManager().also {
+        cancellableManager?.add(it)
+    }
 
     init {
         upstream
-            .first() // TODO Remove .first() once we introduce the Single Publisher
-            .subscribe(cancellableManager,
+            .observeOn(serialQueue)
+            .subscribe(internalCancellableManager,
                 onNext = { value ->
-                    result.value = value
+                    if (!isCancelled.value) {
+                        result.value = value
+                        result.complete()
+
+                        internalCancellableManager.cancel()
+                    }
                 },
                 onError = { error ->
-                    result.error = error
+                    if (!isCancelled.value) {
+                        result.error = error
+
+                        internalCancellableManager.cancel()
+                    }
                 },
                 onCompleted = {
-                    if (result.value == null && result.error == null) {
-                        result.error = EmptyPromiseException
-                    } else {
-                        result.complete()
+                    if (!isCancelled.value) {
+                        if (result.value == null && result.error == null) {
+                            result.error = EmptyPromiseException
+                        }
+                        internalCancellableManager.cancel()
                     }
                 }
             )
+
+        internalCancellableManager.add {
+            serialQueue.dispatch {
+                isCancelled.setOrThrow(false, true)
+
+                if (result.value == null && result.error == null) {
+                    result.error = CancelledPromiseException
+                }
+            }
+        }
     }
 
     override fun subscribe(s: Subscriber<in T>) {
@@ -101,7 +131,11 @@ class Promise<T> internal constructor(
     }
 
     companion object {
-        fun <T> from(single: Publisher<T>): Promise<T> = Promise(single)
+        fun <T> from(
+            single: Publisher<T>,
+            cancellableManager: CancellableManager? = null
+        ): Promise<T> =
+            Promise(single, cancellableManager)
 
         fun <T> resolve(value: T): Promise<T> = from(Publishers.just(value))
 

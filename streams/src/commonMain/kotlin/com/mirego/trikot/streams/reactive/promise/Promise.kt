@@ -134,8 +134,7 @@ class Promise<T> internal constructor(
         fun <T> from(
             single: Publisher<T>,
             cancellableManager: CancellableManager? = null
-        ): Promise<T> =
-            Promise(single, cancellableManager)
+        ): Promise<T> = Promise(single, cancellableManager)
 
         fun <T> resolve(value: T): Promise<T> = from(Publishers.just(value))
 

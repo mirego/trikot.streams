@@ -180,10 +180,48 @@ class PromiseContinuationTests {
 
     @Test
     fun callingThenExecuteSuccessBlockOnSuccess() {
+        var successBlockCalled = false
+        var errorBlockCalled = false
+
+        Promise.resolve(22)
+            .then(
+                onSuccess = {
+                    successBlockCalled = true
+                },
+                onError = {
+                    errorBlockCalled = true
+                }
+            )
+
+        assertTrue(successBlockCalled)
+        assertFalse(errorBlockCalled)
+    }
+
+    @Test
+    fun callingThenExecuteErrorBlockOnError() {
+        var successBlockCalled = false
+        var errorBlockCalled = false
+
+        Promise.reject<Int>(Throwable())
+            .then(
+                onSuccess = {
+                    successBlockCalled = true
+                },
+                onError = {
+                    errorBlockCalled = true
+                }
+            )
+
+        assertFalse(successBlockCalled)
+        assertTrue(errorBlockCalled)
+    }
+
+    @Test
+    fun callingThenReturnAppliesNewPromiseOnSuccess() {
         val value = 22
 
         Promise.resolve(value)
-            .then(
+            .thenReturn(
                 onSuccess = {
                     Promise.resolve("Resolved $it")
                 },
@@ -199,11 +237,11 @@ class PromiseContinuationTests {
     }
 
     @Test
-    fun callingThenExecuteErrorBlockOnError() {
+    fun callingThenReturnAppliesNewPromiseOnError() {
         val throwable = Throwable("Oops!")
 
         Promise.reject<Int>(throwable)
-            .then(
+            .thenReturn(
                 onSuccess = {
                     Promise.resolve("Resolved $it")
                 },

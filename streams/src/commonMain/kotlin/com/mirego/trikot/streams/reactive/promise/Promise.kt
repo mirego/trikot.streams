@@ -69,32 +69,37 @@ class Promise<T> internal constructor(
         result.subscribe(s)
     }
 
-    fun onSuccess(accept: (T) -> Unit): Promise<T> = then(
+    fun onSuccess(accept: (T) -> Unit): Promise<T> = thenReturn(
         onSuccess = { accept(it); resolve(it) },
         onError = ::reject
     )
 
-    fun <R> onSuccessReturn(apply: (T) -> Promise<R>): Promise<R> = then(
+    fun <R> onSuccessReturn(apply: (T) -> Promise<R>): Promise<R> = thenReturn(
         onSuccess = apply,
         onError = ::reject
     )
 
-    fun onError(accept: (Throwable) -> Unit): Promise<T> = then(
+    fun onError(accept: (Throwable) -> Unit): Promise<T> = thenReturn(
         onSuccess = ::resolve,
         onError = { accept(it); reject(it) }
     )
 
-    fun onErrorReturn(apply: (Throwable) -> Promise<T>): Promise<T> = then(
+    fun onErrorReturn(apply: (Throwable) -> Promise<T>): Promise<T> = thenReturn(
         onSuccess = ::resolve,
         onError = apply
     )
 
-    fun finally(execute: () -> Unit): Publisher<T> = then(
+    fun finally(execute: () -> Unit): Publisher<T> = thenReturn(
         onSuccess = { execute(); resolve(it) },
         onError = { execute(); reject(it) }
     )
 
-    fun <R> then(onSuccess: (T) -> Promise<R>, onError: (Throwable) -> Promise<R>): Promise<R> {
+    fun then(onSuccess: (T) -> Unit, onError: (Throwable) -> Unit): Promise<T> = thenReturn(
+        onSuccess = { onSuccess(it); resolve(it) },
+        onError = { onError(it); reject(it) }
+    )
+
+    fun <R> thenReturn(onSuccess: (T) -> Promise<R>, onError: (Throwable) -> Promise<R>): Promise<R> {
         val result = BehaviorSubjectImpl<R>()
         val cancellableManager = CancellableManager()
 

@@ -70,14 +70,47 @@ Returns a new Promise instance that is rejected with the given throwable. Shorth
 
 Promises can be chained using the following operators :
 
-#### `onSuccess(accept)`
+#### `onSuccess()`
 Executes the provided block when the previous promise is resolved. The returned promise has the same untouched state as the original promise.
 
+```kotlin
+Promise.resolve("Promises are cool!")
+    .onSuccess { println(it) }
+
+// > Promises are cool!
+```
+
 #### `onError()`
+Executes the provided block when the previous promise is rejected. The returned promise has the same untouched state as the original promise.
+
+```kotlin
+Promise.reject<Any>(Throwable("Something wrong happened."))
+    .onError { println(it.message) }
+
+// > Something wrong happened.
+```
 
 #### `onSuccessReturn()`
+Applies the provided block to return a new promise when the previous promise is resolved.
+
+```kotlin
+Promise.resolve("Promises are cool!")
+    .onSuccessReturn { Promise.reject("Something wrong happened, again!") }
+    .onError { println(it.message) }
+
+// > Something wrong happened, again!
+```
 
 #### `onErrorReturn()`
+Applies the provided block to return a new promise when the previous promise is rejected.
+
+```kotlin
+Promise.reject<Any>(Throwable("What!? Another rejected promise!"))
+    .onErrorReturn<String> { Promise.resolve("Resolved promises to the rescue!") }
+    .onSuccess { println(it) }
+
+// > Resolved promises to the rescue!
+```
 
 #### `then()`
 

@@ -194,7 +194,7 @@ class TaskDetailViewModelController(
             }
             .onError { error ->
                 if (error is TaskAlreadyExistsException) {
-                    informationText.value = "The tasks already exists :("
+                    informationText.value = "The task already exists :("
                 } else {
                     informationText.value = "Something went wrong :/"
                 }
@@ -216,4 +216,3 @@ class TaskDetailViewModelController(
     }
 }
 ```
-

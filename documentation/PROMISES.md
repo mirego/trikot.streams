@@ -95,8 +95,7 @@ Applies the provided block to return a new promise when the previous promise is 
 
 ```kotlin
 Promise.resolve("Promises are cool!")
-    .onSuccessReturn { Promise.reject("Something wrong happened, again!") }
-    .onError { println(it.message) }
+    .onSuccessReturn { Promise.reject(Throwable("Something wrong happened, again!")).onError { println(it.message) } }
 
 // > Something wrong happened, again!
 ```
@@ -106,14 +105,115 @@ Applies the provided block to return a new promise when the previous promise is 
 
 ```kotlin
 Promise.reject<Any>(Throwable("What!? Another rejected promise!"))
-    .onErrorReturn<String> { Promise.resolve("Resolved promises to the rescue!") }
-    .onSuccess { println(it) }
+    .onErrorReturn<String> { Promise.resolve("Resolved promises to the rescue!").onSuccess { println(it) } }
 
 // > Resolved promises to the rescue!
 ```
 
 #### `then()`
+Executes the provided `onSuccess` block when the previous promise is resolved, or the provided `onError` block when it is instead rejected. The returned promise has the same untouched state as the original promise.
+
+```kotlin
+Promise.resolve("Promises")
+    .then(
+        onSuccess = { println("$it look good!") },
+        onError = { println(it.message) } 
+    }
+
+// > Promises look good!
+```
+
+Note that using this method is the same as using  `somePromise.onSuccess({ ... }).onError({ ... })`.
 
 #### `thenReturn()`
+Applies the provided `onSuccess` block to return a new promise when the previous promise is resolved, or the provided `onError` block when it is instead rejected.
+
+```kotlin
+Promise.reject(Throwable("Whoops."))
+    .thenReturn<String>(
+        onSuccess = { Promise.resolve("Will not be called") },
+        onError = { Promise.resolve("Recovering from: $it.message") } 
+    }
+    .onSuccess { println(it) }
+
+// > Recovering from: Whoops.
+```
+
+Note that using this method is the same as using  `somePromise.onSuccessReturn({ ... }).onErrorReturn({ ... })`.
 
 #### `finally()`
+Executes the provided block regardless of the previous promise's resolved or rejected state. 
+
+```kotlin
+Promise.reject(Throwable("Whoops."))
+    .finally { println("Finally!") }
+
+// > Finally!
+```
+
+## Full example
+```kotlin
+interface TasksRepository {
+    val tasks: Publisher<List<Tasks>>
+    fun setTasks(tasks: List<Tasks>)
+}
+
+class SaveTaskUseCase(
+    private val tasksRepository: TasksRepository
+) {
+    fun saveTask(task: Task): Promise<Unit> {
+        Promise.from(tasksRepository.tasks.first())
+            .onSuccessReturn { tasks ->
+                if (tasks.contains(task) {
+                    Promise.reject(TaskAlreadyExistsException())
+                else {
+                    tasksRepository.setTasks(tasks + task)
+                    Promise.resolve(Unit)
+                }
+            }
+    }
+}
+
+class TaskDetailViewModelController(
+    private val task: Publisher<Task>,
+    private val saveTaskUseCase: SaveTaskUseCase
+) {
+    private val isLoading = Publishers.behaviorSubject<Boolean>(false)
+    private val informationText = Publishers.behaviorSubject<String>("")
+
+    private fun saveTask() {
+        isLoading.value = true
+        informationText.value = ""
+
+        Promise.from(task.first())
+            .onSuccessReturn { task ->
+                saveTaskUseCase.saveTask(task)
+            }
+            .onSuccess {
+                informationText.value = "The task was saved successfully! :)"
+            }
+            .onError { error ->
+                if (error is TaskAlreadyExistsException) {
+                    informationText.value = "The tasks already exists :("
+                } else {
+                    informationText.value = "Something went wrong :/"
+                }
+            }
+            .finally { isLoading.value = false }
+            
+    }
+
+    val loadingView: ViewModel = MutableViewModel().apply {
+        hidden = isLoading.map { !it }
+    }
+
+    val informationLabel: LabelViewModel = MutableLabelViewModel().apply {
+        text = informationText
+    }
+
+    val saveTaskButton: ButtonViewModel = MutableButtonViewModel().apply {
+        onTap = ViewModelAction { saveTask() }.just()
+    }
+}
+```
+

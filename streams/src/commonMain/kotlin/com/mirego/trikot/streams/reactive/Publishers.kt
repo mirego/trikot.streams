@@ -1,10 +1,11 @@
 package com.mirego.trikot.streams.reactive
 
+import com.mirego.trikot.foundation.CommonJSExport
 import org.reactivestreams.Publisher
 import kotlin.js.JsName
 
+@CommonJSExport
 object Publishers {
-    @JsName("behaviorSubject")
     fun <T> behaviorSubject(value: T? = null): BehaviorSubject<T> {
         return BehaviorSubjectImpl(value)
     }

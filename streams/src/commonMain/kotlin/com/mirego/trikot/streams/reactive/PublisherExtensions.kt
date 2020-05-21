@@ -1,5 +1,6 @@
 package com.mirego.trikot.streams.reactive
 
+import com.mirego.trikot.foundation.CommonJSExport
 import com.mirego.trikot.foundation.FoundationConfiguration
 import com.mirego.trikot.foundation.concurrent.dispatchQueue.DispatchQueue
 import com.mirego.trikot.foundation.timers.TimerFactory
@@ -35,6 +36,7 @@ typealias SubscriptionBlock<T> = (T) -> Unit
 typealias SubscriptionErrorBlock = (Throwable) -> Unit
 typealias SubscriptionCompletedBlock = () -> Unit
 
+@CommonJSExport
 fun <T> Publisher<T>.subscribe(
     cancellableManager: CancellableManager,
     onNext: SubscriptionBlock<T>
@@ -42,6 +44,7 @@ fun <T> Publisher<T>.subscribe(
     subscribe(cancellableManager, onNext, null, null)
 }
 
+@CommonJSExport
 fun <T> Publisher<T>.subscribe(
     cancellableManager: CancellableManager,
     onNext: SubscriptionBlock<T>,
@@ -50,6 +53,7 @@ fun <T> Publisher<T>.subscribe(
     subscribe(cancellableManager, onNext, onError, null)
 }
 
+@CommonJSExport
 fun <T> Publisher<T>.subscribe(
     cancellableManager: CancellableManager,
     onNext: SubscriptionBlock<T>,
@@ -59,66 +63,82 @@ fun <T> Publisher<T>.subscribe(
     subscribe(SubscriberFromBlock(cancellableManager, onNext, onError, onCompleted))
 }
 
+@CommonJSExport
 fun <T, R> Publisher<T>.map(block: MapProcessorBlock<T, R>): Publisher<R> {
     return MapProcessor(this, block)
 }
 
+@CommonJSExport
 fun <T, R> Publisher<T>.switchMap(block: SwitchMapProcessorBlock<T, R>): Publisher<R> {
     return SwitchMapProcessor(this, block)
 }
 
+@CommonJSExport
 fun <T> Publisher<T>.observeOn(dispatcher: DispatchQueue): Publisher<T> {
     return ObserveOnProcessor(this, dispatcher)
 }
 
+@CommonJSExport
 fun <T> Publisher<T>.subscribeOn(dispatcher: DispatchQueue): Publisher<T> {
     return SubscribeOnProcessor(this, dispatcher)
 }
 
+@CommonJSExport
 fun <T> Publisher<T>.first(): Publisher<T> {
     return FirstProcessor(this)
 }
 
+@CommonJSExport
 fun <T> Publisher<T>.withCancellableManager(): Publisher<WithCancellableManagerProcessorResultType<T>> {
     return WithCancellableManagerProcessor(this)
 }
 
+@CommonJSExport
 fun <T> Publisher<T>.filter(block: FilterProcessorBlock<T>): Publisher<T> {
     return FilterProcessor(this, block)
 }
 
+@CommonJSExport
 fun <T> Publisher<T>.shared(): Publisher<T> {
     return SharedProcessor(this)
 }
 
+@CommonJSExport
 fun <T> Publisher<T>.onErrorReturn(block: OnErrorReturnProcessorBlock<T>): Publisher<T> {
     return OnErrorReturnProcessor(this, block)
 }
 
+@CommonJSExport
 fun <T> Publisher<T>.distinctUntilChanged(): Publisher<T> {
     return DistinctUntilChangedProcessor(this)
 }
 
+@CommonJSExport
 fun <T> Publisher<T>.withPreviousValue(): Publisher<Pair<T?, T>> {
     return WithPreviousValueProcessor(this)
 }
 
+@CommonJSExport
 fun <T> Publisher<T>.concat(publisher: Publisher<T>): Publisher<T> {
     return ConcatProcessor(this, publisher)
 }
 
+@CommonJSExport
 fun <T> Publisher<T>.startWith(value: T): Publisher<T> {
     return ConcatProcessor(value.just(), this)
 }
 
+@CommonJSExport
 fun <T, R> Publisher<T>.filterNotNull(block: ((T) -> R?)): Publisher<R> {
     return this.filter { block(it) != null }.map { block(it)!! }
 }
 
+@CommonJSExport
 fun <T> Publisher<T>.threadLocal(observeOnQueue: DispatchQueue, subscribeOnQueue: DispatchQueue = StreamsConfiguration.publisherExecutionDispatchQueue): Publisher<T> {
     return ThreadLocalProcessor(this, observeOnQueue, subscribeOnQueue)
 }
 
+@CommonJSExport
 fun <T> Publisher<T>.timeout(
     duration: Duration,
     message: String = "Default timeout message"
@@ -126,6 +146,7 @@ fun <T> Publisher<T>.timeout(
     return TimeoutProcessor(duration = duration, timeoutMessage = message, parentPublisher = this)
 }
 
+@CommonJSExport
 @ExperimentalTime
 fun <T> Publisher<T>.debounce(
     timeout: Duration,
@@ -140,6 +161,7 @@ fun <T> Publisher<T>.debounce(
  * If that Publisher calls complete or error then this method will call complete or error on the child subscription.
  * Otherwise this method will resubscribe to the source Publisher.
  */
+@CommonJSExport
 fun <T> Publisher<T>.retryWhen(block: RetryWhenPublisherBlock): Publisher<T> {
     return RetryWhenProcessor(this, block)
 }

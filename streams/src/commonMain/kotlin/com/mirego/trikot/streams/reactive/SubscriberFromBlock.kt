@@ -1,11 +1,13 @@
 package com.mirego.trikot.streams.reactive
 
+import com.mirego.trikot.foundation.CommonJSExport
 import com.mirego.trikot.foundation.concurrent.AtomicReference
 import com.mirego.trikot.streams.cancellable.Cancellable
 import com.mirego.trikot.streams.cancellable.CancellableManager
 import org.reactivestreams.Subscriber
 import org.reactivestreams.Subscription
 
+@CommonJSExport
 class SubscriberFromBlock<T>(
     private val cancellableManager: CancellableManager,
     private val subscriptionBlock: SubscriptionBlock<T>,

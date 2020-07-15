@@ -20,6 +20,8 @@ repositories {
     google()
     jcenter()
     mavenCentral()
+    maven { url 'https://kotlin.bintray.com/kotlin-dev' }
+    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
     maven { url "https://kotlin.bintray.com/kotlinx" }
     maven { url 'https://jitpack.io' }
     maven { url('https://s3.amazonaws.com/mirego-maven/public') }
@@ -52,7 +54,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation "com.mirego.trikot:trikotFoundation:$trikot_foundation_version"
-                implementation 'org.jetbrains.kotlin:kotlin-stdlib-common'
+                implementation kotlin('stdlib-common')
             }
         }
         commonTest {

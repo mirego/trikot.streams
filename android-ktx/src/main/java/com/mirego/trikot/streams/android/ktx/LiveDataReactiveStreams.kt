@@ -10,6 +10,12 @@ import org.reactivestreams.Subscription
 import java.util.concurrent.atomic.AtomicReference
 
 /**
+ * This implementation of [LiveDataReactiveStreams] exists so that the publisher
+ * values are dispatched to the correct thread. If the request comes from the main thread, we
+ * synchronously update the liveData and if we aren't on the main thread we post a new task to the main thread.
+ * To do this, we changed the implementation of [PublisherLiveData].onNext()
+ *
+ *
  * Adapts [LiveData] input and output to the ReactiveStreams spec.
  */
 object LiveDataReactiveStreams {
@@ -93,6 +99,10 @@ object LiveDataReactiveStreams {
                 }
             }
 
+            /**
+             * Depending on which thread we currently are in, we either update the liveData synchronously
+             * or post a new task on the ui thread.
+             */
             override fun onNext(t: T) {
                 if (Looper.myLooper() == Looper.getMainLooper()) {
                     setValue(t)

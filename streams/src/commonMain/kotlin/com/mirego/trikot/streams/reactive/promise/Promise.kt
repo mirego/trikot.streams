@@ -54,7 +54,7 @@ class Promise<T> internal constructor(
                 }
             )
 
-        internalCancellableManager.add {
+        cancellableManager?.add {
             serialQueue.dispatch {
                 isCancelled.setOrThrow(false, true)
 

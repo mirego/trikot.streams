@@ -38,7 +38,7 @@ dependencies {
 release {
     checkTasks = ['check']
     buildTasks = ['publish']
-    updateVersionPart = 1
+    updateVersionPart = 2
     tagPrefix = 'android-ktx-'
 }
 

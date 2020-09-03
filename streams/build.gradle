@@ -38,10 +38,10 @@ kotlin {
 
     // Restore JS engines when failing tests are fixed
     js()
-//    js {
-//        browser()
-//        nodejs()
-//    }
+    js {
+        browser()
+        nodejs()
+    }
 
     sourceSets {
         all {
@@ -78,13 +78,12 @@ kotlin {
             dependsOn commonMain
         }
 
-        // Uncomment when failing tests are fixed
-//        jsTest {
-//            dependsOn commonTest
-//            dependencies {
-//                implementation 'org.jetbrains.kotlin:kotlin-test-js'
-//            }
-//        }
+        jsTest {
+            dependsOn commonTest
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-test-js'
+            }
+        }
 
         androidMain {
             dependsOn commonMain

@@ -164,17 +164,12 @@ class CombineLatestProcessorTests {
     fun whenUsingSafeCombineNoValueAreDispatchedWhenMissing() {
         val firstPublisher = MockPublisher("a")
         val secondPublisher = MockPublisher()
-        var firstValueReceived: String? = null
-        var secondValueReceived: String? = null
-
+        var didDispatch = false
         firstPublisher.safeCombine(secondPublisher)
-            .subscribe(CancellableManager()) { (value1, value2) ->
-                firstValueReceived = value1
-                secondValueReceived = value2
+            .subscribe(CancellableManager()) {
+                didDispatch = true
             }
-
-        assertNull(firstValueReceived)
-        assertNull(secondValueReceived)
+        assertFalse(didDispatch)
     }
 
     @Test

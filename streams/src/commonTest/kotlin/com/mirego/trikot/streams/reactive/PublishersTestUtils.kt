@@ -1,8 +1,8 @@
 package com.mirego.trikot.streams.reactive
 
 import com.mirego.trikot.streams.cancellable.CancellableManager
-import kotlin.test.assertNotNull
 import org.reactivestreams.Publisher
+import kotlin.test.assertNotNull
 
 fun <T> Publisher<T>.get(block: (T) -> Unit) {
     subscribe(CancellableManager(), onNext = block)

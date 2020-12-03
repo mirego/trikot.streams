@@ -28,8 +28,7 @@ class Promise<T> internal constructor(
     init {
         upstream
             .observeOn(serialQueue)
-            .subscribe(
-                internalCancellableManager,
+            .subscribe(internalCancellableManager,
                 onNext = { value ->
                     if (!isCancelled.value) {
                         result.value = value
@@ -109,11 +108,9 @@ class Promise<T> internal constructor(
         val result = BehaviorSubjectImpl<R>()
         val cancellableManager = CancellableManager()
 
-        subscribe(
-            cancellableManager,
+        subscribe(cancellableManager,
             onNext = { t ->
-                onSuccess(t).subscribe(
-                    cancellableManager,
+                onSuccess(t).subscribe(cancellableManager,
                     onNext = { r ->
                         result.value = r
                     },
@@ -126,8 +123,7 @@ class Promise<T> internal constructor(
                 )
             },
             onError = { e ->
-                onError(e).subscribe(
-                    cancellableManager,
+                onError(e).subscribe(cancellableManager,
                     onNext = { r ->
                         result.value = r
                     },

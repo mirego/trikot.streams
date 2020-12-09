@@ -24,7 +24,6 @@ class OnErrorResumeNextProcessor<T>(parentPublisher: Publisher<T>, private var b
         private val block: OnErrorResumeNextBlock<T>
     ) : ProcessorSubscription<T, T>(subscriber) {
         private val cancellableManagerProvider = CancellableManagerProvider()
-        private val currentPublisher = AtomicReference<Publisher<T>?>(null)
         private val onErrorValidation = AtomicReference(0)
         private val serialQueue = SynchronousSerialQueue()
 
@@ -47,11 +46,12 @@ class OnErrorResumeNextProcessor<T>(parentPublisher: Publisher<T>, private var b
                 return
             }
 
-            currentPublisher.setOrThrow(currentPublisher.value, newPublisher)
-            newPublisher.observeOn(serialQueue).subscribe(cancellableManagerProvider.cancelPreviousAndCreate(),
+            newPublisher.observeOn(serialQueue).subscribe(
+                cancellableManagerProvider.cancelPreviousAndCreate(),
                 onNext = { subscriber.onNext(it) },
                 onError = { subscriber.onError(it) },
-                onCompleted = { subscriber.onComplete() })
+                onCompleted = { subscriber.onComplete() }
+            )
 
             onErrorValidation.setOrThrow(1, 0)
         }

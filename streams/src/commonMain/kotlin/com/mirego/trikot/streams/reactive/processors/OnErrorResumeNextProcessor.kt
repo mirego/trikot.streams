@@ -24,7 +24,7 @@ class OnErrorResumeNextProcessor<T>(parentPublisher: Publisher<T>, private var b
         private val block: OnErrorResumeNextBlock<T>
     ) : ProcessorSubscription<T, T>(subscriber) {
         private val cancellableManagerProvider = CancellableManagerProvider()
-        private val onErrorValidation = AtomicReference(0)
+        private val onErrorOnce = AtomicReference(false)
         private val serialQueue = SynchronousSerialQueue()
 
         override fun onCancel(s: Subscription) {
@@ -37,7 +37,9 @@ class OnErrorResumeNextProcessor<T>(parentPublisher: Publisher<T>, private var b
         }
 
         override fun onError(t: Throwable) {
-            onErrorValidation.setOrThrow(0, 1)
+            if (!onErrorOnce.compareAndSet(false, true)) {
+                throw IllegalStateException("onError was already called once")
+            }
 
             val newPublisher = try {
                 block(t)
@@ -52,8 +54,6 @@ class OnErrorResumeNextProcessor<T>(parentPublisher: Publisher<T>, private var b
                 onError = { subscriber.onError(it) },
                 onCompleted = { subscriber.onComplete() }
             )
-
-            onErrorValidation.setOrThrow(1, 0)
         }
     }
 }

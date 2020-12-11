@@ -14,8 +14,8 @@ class MergeProcessorTests {
 
     @Test
     fun whenAllPublishersCompleteMergeCompletes() {
-        val firstPublisher = Publishers.behaviorSubject("1")
-        val secondPublisher = Publishers.behaviorSubject("2")
+        val firstPublisher = Publishers.behaviorSubject<String>()
+        val secondPublisher = Publishers.behaviorSubject<String>()
         val receivedValues = mutableListOf<String>()
         var completed = false
         firstPublisher.merge(secondPublisher).subscribe(CancellableManager(),
@@ -23,7 +23,12 @@ class MergeProcessorTests {
             onError = { throw IllegalStateException() },
             onCompleted = { completed = true })
 
-        assertTrue(receivedValues.containsAll(listOf("1", "2")))
+        firstPublisher.value = "1"
+        secondPublisher.value = "2"
+        firstPublisher.complete()
+        secondPublisher.complete()
+
+        assertEquals(listOf("1", "2"), receivedValues)
         assertTrue(completed)
     }
 

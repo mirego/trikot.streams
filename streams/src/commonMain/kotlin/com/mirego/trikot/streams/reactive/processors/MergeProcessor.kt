@@ -39,7 +39,7 @@ class MergeProcessor<T>(parentPublisher: Publisher<T>, private val publishers: L
         override fun onComplete() {
             dispatchCompletedIfAllCompleted()
         }
-        
+
         override fun onNext(t: T, subscriber: Subscriber<in T>) {
             subscriber.onNext(t)
         }

@@ -170,8 +170,8 @@ fun <T> Publisher<T>.onErrorResumeNext(block: OnErrorResumeNextBlock<T>): Publis
  * and will terminate the merged Publisher.
  * onComplete notification will only be sent if all merged Publishers are completed
  */
-fun <T> Publisher<T>.merge(publishers: List<Publisher<out T>>) : Publisher<T> =
+fun <T> Publisher<T>.merge(publishers: List<Publisher<out T>>): Publisher<T> =
     MergeProcessor(this, publishers)
 
-fun  <T> Publisher<T>.merge(vararg publishers: Publisher<out T>): Publisher<T> =
+fun <T> Publisher<T>.merge(vararg publishers: Publisher<out T>): Publisher<T> =
     MergeProcessor(this, publishers.toList())

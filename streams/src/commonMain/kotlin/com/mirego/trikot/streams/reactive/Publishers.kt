@@ -40,17 +40,17 @@ object Publishers {
      */
     @JsName("never")
     fun <T> never(): Publisher<T> {
-		return object: Publisher<T> {
-			override fun subscribe(s: Subscriber<in T>) {
-				s.onSubscribe(object: Subscription {
-					override fun request(n: Long) {
-					}
+        return object : Publisher<T> {
+            override fun subscribe(s: Subscriber<in T>) {
+                s.onSubscribe(object : Subscription {
+                    override fun request(n: Long) {
+                    }
 
-					override fun cancel() {
-					}
-				})
-			}
-		}
+                    override fun cancel() {
+                    }
+                })
+            }
+        }
     }
 
     /**

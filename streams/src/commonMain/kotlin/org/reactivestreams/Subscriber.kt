@@ -1,5 +1,6 @@
 package org.reactivestreams
 
+import kotlin.js.JsExport
 import kotlin.js.JsName
 
 /**
@@ -20,6 +21,7 @@ import kotlin.js.JsName
  *
  * @param <T> the type of element signaled.
 </T> */
+@JsExport
 interface Subscriber<T> {
     /**
      * Invoked after calling [Publisher.subscribe].

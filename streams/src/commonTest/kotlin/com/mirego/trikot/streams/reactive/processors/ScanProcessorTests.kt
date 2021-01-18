@@ -19,14 +19,17 @@ class ScanProcessorTests {
 
         publisher
             .scan { acc, current -> acc + current }
-            .subscribe(CancellableManager(),
+            .subscribe(
+                CancellableManager(),
                 onNext = {
                     receivedResults.add(it)
-                }, onError = {
-
-                }, onCompleted = {
+                },
+                onError = {
+                },
+                onCompleted = {
                     completed = true
-                })
+                }
+            )
 
         publisher.value = 1
         publisher.value = 2

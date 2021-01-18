@@ -42,6 +42,36 @@ class ScanProcessorTests {
     }
 
     @Test
+    fun testScanWithInitialValue() {
+        val publisher = Publishers.behaviorSubject(0)
+        val receivedResults = mutableListOf<Int>()
+        var completed = false
+
+        publisher
+            .scan(10) { acc, current -> acc + current }
+            .subscribe(
+                CancellableManager(),
+                onNext = {
+                    receivedResults.add(it)
+                },
+                onError = {
+                },
+                onCompleted = {
+                    completed = true
+                }
+            )
+
+        publisher.value = 1
+        publisher.value = 2
+        publisher.value = 3
+        publisher.value = 4
+        publisher.complete()
+
+        assertEquals(listOf(10, 11, 13, 16, 20), receivedResults)
+        assertTrue(completed)
+    }
+
+    @Test
     fun testMappingStreamsProcessorException() {
         val publisher = Publishers.behaviorSubject("a")
         val expectedException = StreamsProcessorException()

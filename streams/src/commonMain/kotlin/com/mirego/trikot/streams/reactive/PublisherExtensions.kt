@@ -184,5 +184,9 @@ fun <T> Publisher<T>.merge(vararg publishers: Publisher<out T>): Publisher<T> =
  * This sort of operator is sometimes called an “accumulator” in other contexts.
  */
 fun <T> Publisher<T>.scan(block: ScanProcessorBlock<T>): Publisher<T> {
-    return ScanProcessor(this, block)
+    return ScanProcessor(this, null, block)
+}
+
+fun <T> Publisher<T>.scan(initialValue: T, block: ScanProcessorBlock<T>): Publisher<T> {
+    return ScanProcessor(this, initialValue, block)
 }

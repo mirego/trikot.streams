@@ -72,6 +72,40 @@ class ScanProcessorTests {
     }
 
     @Test
+    fun testReconnection() {
+        val publisher = Publishers.publishSubject<String>()
+        val receivedResults = mutableListOf<String>()
+
+        val scanPublisher = publisher.scan { acc, current -> acc + current }
+
+        val cancellableManager1 = CancellableManager()
+        val cancellableManager2 = CancellableManager()
+        scanPublisher
+            .subscribe(cancellableManager1) {
+                receivedResults.add(it)
+            }
+
+        publisher.value = "a"
+        publisher.value = "b"
+        publisher.value = "c"
+
+        cancellableManager1.cancel()
+
+        scanPublisher
+            .subscribe(cancellableManager2) {
+                receivedResults.add(it)
+            }
+
+        publisher.value = "a"
+        publisher.value = "b"
+        publisher.value = "c"
+
+        cancellableManager2.cancel()
+
+        assertEquals(listOf("a", "ab", "abc", "a", "ab", "abc"), receivedResults)
+    }
+
+    @Test
     fun testMappingStreamsProcessorException() {
         val publisher = Publishers.behaviorSubject("a")
         val expectedException = StreamsProcessorException()

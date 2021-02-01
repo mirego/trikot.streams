@@ -1,7 +1,5 @@
 package org.reactivestreams
 
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 /**
  * A [Publisher] is a provider of a potentially unbounded number of sequenced elements, publishing them according to
@@ -13,7 +11,6 @@ import kotlin.js.JsName
  *
  * @param <T> the type of element signaled.
 </T> */
-@JsExport
 interface Publisher<T> {
 
     /**
@@ -34,6 +31,5 @@ interface Publisher<T> {
      *
      * @param s the [Subscriber] that will consume signals from this [Publisher]
      */
-    @JsName("subscribe")
     fun subscribe(s: Subscriber<in T>)
 }

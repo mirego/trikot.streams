@@ -17,9 +17,14 @@ object Publishers {
      * Create a Publisher that emits a particular item
      * @see <a href="http://reactivex.io/documentation/operators/just.html">http://reactivex.io/documentation/operators/just.html</a>
      */
-    fun <T> just(vararg values: T): Publisher<T> {
-        return JustPublisher(values)
+    fun <T> just(value: T): Publisher<T> {
+        return JustPublisher(listOf(value))
     }
+    
+    fun <T> justMany(vararg values: T): Publisher<T> {
+        return JustPublisher(values.toList())
+    }
+    
 
     /**
      * Create a Publisher that emits no items but terminates normally

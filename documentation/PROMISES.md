@@ -71,7 +71,7 @@ Returns a new Promise instance that is rejected with the given throwable. Shorth
 Promises can also be created form asynchronous requests that are not publishers, using the following initializer:
 
 #### `Promise.create(cancellableManager?) { resolve, reject -> ... }`
-Returns a new Promise instance that will resolve or reject depending on the provided execution block. The provided block should at least, at any point in time, call resolve() with the desired value or (reject) with the desired throwable. The promise will not settle untill the resolve() or reject() blocks have been called, of if the cancellableManager has been cancelled.
+Returns a new Promise instance that will resolve or reject depending on the provided execution block. The provided block should at least, at any point in time, call resolve() with the desired value or reject() with the desired throwable. The promise will not settle untill the resolve() or reject() blocks have been called, of if the cancellableManager has been cancelled.
 
 Using this initializer allows for a `CancellableManager` to be provided optionally.
 

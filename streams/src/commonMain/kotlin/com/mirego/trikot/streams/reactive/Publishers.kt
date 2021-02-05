@@ -20,11 +20,10 @@ object Publishers {
     fun <T> just(value: T): Publisher<T> {
         return JustPublisher(listOf(value))
     }
-    
+
     fun <T> justMany(vararg values: T): Publisher<T> {
         return JustPublisher(values.toList())
     }
-    
 
     /**
      * Create a Publisher that emits no items but terminates normally

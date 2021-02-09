@@ -8,10 +8,21 @@ import com.mirego.trikot.streams.utils.MockTimer
 import com.mirego.trikot.streams.utils.MockTimerFactory
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlin.time.seconds
 
 class SampleProcessorTests {
-    private val timer = MockTimer()
+    private val firstMockTimer = MockTimer()
+    private val secondMockTimer = MockTimer()
+    private var timeGetCount = 0
+    private val mockTimerFactory = MockTimerFactory { _, _ ->
+        timeGetCount += 1
+        if (timeGetCount == 1) {
+            firstMockTimer
+        } else {
+            secondMockTimer
+        }
+    }
 
     @Test
     fun givenSubscribeToPublisherWithValueWhenSampleThenValueIsDispatchedWhenIntervalIsReached() {
@@ -19,13 +30,13 @@ class SampleProcessorTests {
         val publishedValues = mutableListOf<Int>()
 
         publisher
-            .sample(1.seconds, MockTimerFactory { _, _ -> timer })
+            .sample(1.seconds, mockTimerFactory)
             .subscribe(CancellableManager()) {
                 publishedValues.add(it)
             }
 
         assertEquals(emptyList<Int>(), publishedValues)
-        timer.executeBlock()
+        firstMockTimer.executeBlock()
         assertEquals(listOf(1), publishedValues)
     }
 
@@ -35,15 +46,15 @@ class SampleProcessorTests {
         val publishedValues = mutableListOf<Int>()
 
         publisher
-            .sample(1.seconds, MockTimerFactory { _, _ -> timer })
+            .sample(1.seconds, mockTimerFactory)
             .subscribe(CancellableManager()) {
                 publishedValues.add(it)
             }
 
-        timer.executeBlock()
+        firstMockTimer.executeBlock()
         publisher.value = 2
         publisher.value = 3
-        timer.executeBlock()
+        firstMockTimer.executeBlock()
 
         assertEquals(listOf(1, 3), publishedValues)
     }
@@ -54,16 +65,16 @@ class SampleProcessorTests {
         val publishedValues = mutableListOf<Int>()
 
         publisher
-            .sample(1.seconds, MockTimerFactory { _, _ -> timer })
+            .sample(1.seconds, mockTimerFactory)
             .subscribe(CancellableManager()) {
                 publishedValues.add(it)
             }
 
-        timer.executeBlock()
+        firstMockTimer.executeBlock()
         publisher.value = 2
-        timer.executeBlock()
+        firstMockTimer.executeBlock()
         publisher.value = 2
-        timer.executeBlock()
+        firstMockTimer.executeBlock()
 
         assertEquals(listOf(1, 2, 2), publishedValues)
     }
@@ -74,15 +85,15 @@ class SampleProcessorTests {
         val publishedValues = mutableListOf<Int>()
 
         publisher
-            .sample(1.seconds, MockTimerFactory { _, _ -> timer })
+            .sample(1.seconds, mockTimerFactory)
             .subscribe(CancellableManager()) {
                 publishedValues.add(it)
             }
 
-        timer.executeBlock()
+        firstMockTimer.executeBlock()
         publisher.value = 2
-        timer.executeBlock()
-        timer.executeBlock()
+        firstMockTimer.executeBlock()
+        firstMockTimer.executeBlock()
 
         assertEquals(listOf(1, 2), publishedValues)
     }
@@ -90,20 +101,27 @@ class SampleProcessorTests {
     @Test
     fun givenAPublisherThatDoesNotEmitValueWithinAnIntervalAndASubscriptionIsMadeAfterWhenSampleThenItReceivesTheLastValue() {
         val publisher = Publishers.behaviorSubject(1)
+        val firstSubscriptionPublishedValues = mutableListOf<Int>()
         val secondSubscriptionPublishedValues = mutableListOf<Int>()
 
-        val samplePublisher = publisher.sample(1.seconds, MockTimerFactory { _, _ -> timer })
+        val samplePublisher = publisher.sample(1.seconds, mockTimerFactory)
 
-        samplePublisher.subscribe(CancellableManager()) {}
+        samplePublisher.subscribe(CancellableManager()) {
+            firstSubscriptionPublishedValues.add(it)
+        }
 
+        firstMockTimer.executeBlock()
         publisher.value = 2
-        timer.executeBlock()
+        firstMockTimer.executeBlock()
 
         samplePublisher.subscribe(CancellableManager()) {
             secondSubscriptionPublishedValues.add(it)
         }
 
-        timer.executeBlock()
+        firstMockTimer.executeBlock()
+        secondMockTimer.executeBlock()
+
+        assertEquals(listOf(1, 2), firstSubscriptionPublishedValues)
         assertEquals(listOf(2), secondSubscriptionPublishedValues)
     }
 
@@ -113,15 +131,32 @@ class SampleProcessorTests {
         val publishedValues = mutableListOf<Int>()
 
         publisher
-            .sample(1.seconds, MockTimerFactory { _, _ -> timer })
+            .sample(1.seconds, mockTimerFactory)
             .subscribe(CancellableManager()) {
                 publishedValues.add(it)
             }
 
-        timer.executeBlock()
+        firstMockTimer.executeBlock()
         publisher.value = 2
         publisher.complete()
 
         assertEquals(listOf(1, 2), publishedValues)
+    }
+
+    @Test
+    fun whenCancelSampleThenTimerIsAlsoCanceled() {
+        val publisher = Publishers.behaviorSubject(1)
+        val publishedValues = mutableListOf<Int>()
+        val cancellableManager = CancellableManager()
+
+        publisher
+            .sample(1.seconds, mockTimerFactory)
+            .subscribe(cancellableManager) {
+                publishedValues.add(it)
+            }
+
+        cancellableManager.cancel()
+
+        assertTrue(firstMockTimer.isCancelled)
     }
 }

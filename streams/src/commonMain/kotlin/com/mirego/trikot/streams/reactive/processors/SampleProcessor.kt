@@ -2,6 +2,7 @@ package com.mirego.trikot.streams.reactive.processors
 
 import com.mirego.trikot.foundation.FoundationConfiguration
 import com.mirego.trikot.foundation.concurrent.AtomicReference
+import com.mirego.trikot.foundation.concurrent.dispatchQueue.SequentialDispatchQueue
 import com.mirego.trikot.foundation.timers.TimerFactory
 import com.mirego.trikot.streams.cancellable.CancellableManagerProvider
 import org.reactivestreams.Publisher
@@ -26,6 +27,7 @@ class SampleProcessor<T>(
     ) : ProcessorSubscription<T, T>(subscriber) {
         private val cancellableManagerProvider = CancellableManagerProvider()
         private val lastEmittedValue = AtomicReference<T?>(null)
+        private val sequentialDispatchQueue = SequentialDispatchQueue()
 
         private fun initializeTimer() {
             val cancellableManager = cancellableManagerProvider.cancelPreviousAndCreate()
@@ -43,7 +45,9 @@ class SampleProcessor<T>(
         }
 
         override fun onNext(t: T, subscriber: Subscriber<in T>) {
-            lastEmittedValue.setOrThrow(lastEmittedValue.value, t)
+            sequentialDispatchQueue.dispatch {
+                lastEmittedValue.setOrThrow(lastEmittedValue.value, t)
+            }
         }
 
         override fun onCancel(s: Subscription) {

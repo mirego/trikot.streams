@@ -25,7 +25,7 @@ class SampleProcessor<T>(
         private val timerFactory: TimerFactory
     ) : ProcessorSubscription<T, T>(subscriber) {
         private val cancellableManagerProvider = CancellableManagerProvider()
-        private val currentValueReference = AtomicReference<T?>(null)
+        private val lastEmittedValue = AtomicReference<T?>(null)
 
         private fun initializeTimer() {
             val cancellableManager = cancellableManagerProvider.cancelPreviousAndCreate()
@@ -43,7 +43,7 @@ class SampleProcessor<T>(
         }
 
         override fun onNext(t: T, subscriber: Subscriber<in T>) {
-            currentValueReference.setOrThrow(currentValueReference.value, t)
+            lastEmittedValue.setOrThrow(lastEmittedValue.value, t)
         }
 
         override fun onCancel(s: Subscription) {
@@ -57,8 +57,8 @@ class SampleProcessor<T>(
         }
 
         private fun dispatchSampledValue() {
-            currentValueReference.getAndSet(null)?.let { sampledValue ->
-                subscriber.onNext(sampledValue)
+            lastEmittedValue.getAndSet(null)?.let { emittedValue ->
+                subscriber.onNext(emittedValue)
             }
         }
     }

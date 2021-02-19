@@ -79,13 +79,18 @@ class DelayProcessorTests {
         var completed = false
         publisher
             .delay(5.seconds, timerFactory)
-            .subscribe(CancellableManager(), onNext = {
-                receivedResults.add(it)
-            }, onError = {
-                error = it
-            }, onCompleted = {
-                completed = true
-            })
+            .subscribe(
+                CancellableManager(),
+                onNext = {
+                    receivedResults.add(it)
+                },
+                onError = {
+                    error = it
+                },
+                onCompleted = {
+                    completed = true
+                }
+            )
 
         publisher.value = "a"
         timers[0].executeBlock()

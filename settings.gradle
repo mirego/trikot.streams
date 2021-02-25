@@ -23,4 +23,4 @@ pluginManagement {
 }
 rootProject.name = 'trikot.streams'
 
-include ':streams', ':android-ktx'
+include ':streams'

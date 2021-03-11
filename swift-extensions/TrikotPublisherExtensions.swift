@@ -29,19 +29,27 @@ extension NSObject {
     }
 
     public func observe<V>(_ publisher: Publisher, toClosure closure: @escaping ((V) -> Void)) {
-        observe(cancellableManager: trikotInternalPublisherCancellableManager, publisher: publisher, toClosure: closure)
+        if let publisher = publisher as? JustPublisher<AnyObject> {
+            publisher.values.forEach { closure($0 as! V) }
+        } else {
+            observe(cancellableManager: trikotInternalPublisherCancellableManager, publisher: publisher, toClosure: closure)
+        }
     }
 
     public func observe<V>(cancellableManager: CancellableManager, publisher: Publisher, toClosure closure: @escaping ((V) -> Void)) {
-        PublisherExtensionsKt.subscribe(publisher, cancellableManager: cancellableManager) {(value: Any?) in
-            if Thread.current.isMainThread {
-                assert(value is V, "Incorrect binding value type - Cannot cast \(value.self) to \(V.self)")
-                closure(value as! V)
-            } else {
-                MrFreezeKt.freeze(objectToFreeze: value)
-                DispatchQueue.main.async {
+        if let publisher = publisher as? JustPublisher<AnyObject> {
+            publisher.values.forEach { closure($0 as! V) }
+        } else {
+            PublisherExtensionsKt.subscribe(publisher, cancellableManager: cancellableManager) {(value: Any?) in
+                if Thread.current.isMainThread {
                     assert(value is V, "Incorrect binding value type - Cannot cast \(value.self) to \(V.self)")
                     closure(value as! V)
+                } else {
+                    MrFreezeKt.freeze(objectToFreeze: value)
+                    DispatchQueue.main.async {
+                        assert(value is V, "Incorrect binding value type - Cannot cast \(value.self) to \(V.self)")
+                        closure(value as! V)
+                    }
                 }
             }
         }
@@ -57,17 +65,25 @@ extension NSObject {
 
 extension NSObject {
     public func observe<V>(_ concretePublisher: ConcretePublisher<V>, toClosure closure: @escaping ((V) -> Void)) {
-        observe(cancellableManager: trikotInternalPublisherCancellableManager, concretePublisher: concretePublisher, toClosure: closure)
+        if let publisher = publisher as? JustPublisher<AnyObject> {
+            publisher.values.forEach { closure($0 as! V) }
+        } else {
+            observe(cancellableManager: trikotInternalPublisherCancellableManager, concretePublisher: concretePublisher, toClosure: closure)
+        }
     }
 
     public func observe<V>(cancellableManager: CancellableManager, concretePublisher: ConcretePublisher<V>, toClosure closure: @escaping ((V) -> Void)) {
-        PublisherExtensionsKt.subscribe(concretePublisher, cancellableManager: cancellableManager) {(value: Any?) in
-            if Thread.current.isMainThread {
-                closure(value as! V)
-            } else {
-                MrFreezeKt.freeze(objectToFreeze: value)
-                DispatchQueue.main.async {
+        if let publisher = publisher as? JustPublisher<AnyObject> {
+            publisher.values.forEach { closure($0 as! V) }
+        } else {
+            PublisherExtensionsKt.subscribe(concretePublisher, cancellableManager: cancellableManager) {(value: Any?) in
+                if Thread.current.isMainThread {
                     closure(value as! V)
+                } else {
+                    MrFreezeKt.freeze(objectToFreeze: value)
+                    DispatchQueue.main.async {
+                        closure(value as! V)
+                    }
                 }
             }
         }

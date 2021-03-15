@@ -29,16 +29,20 @@ extension NSObject {
     }
 
     public func observe<V>(_ publisher: Publisher, toClosure closure: @escaping ((V) -> Void)) {
-        if let publisher = publisher as? JustPublisher<AnyObject> {
-            publisher.values.forEach { closure($0 as! V) }
+        if let publisher = publisher as? NeverPublisher<AnyObject> {
+        }
+        else if let publisher = publisher as? JustPublisher<AnyObject> {
+            (publisher.values as! NSArray).forEach { closure($0 as! V) }
         } else {
             observe(cancellableManager: trikotInternalPublisherCancellableManager, publisher: publisher, toClosure: closure)
         }
     }
 
     public func observe<V>(cancellableManager: CancellableManager, publisher: Publisher, toClosure closure: @escaping ((V) -> Void)) {
-        if let publisher = publisher as? JustPublisher<AnyObject> {
-            publisher.values.forEach { closure($0 as! V) }
+        if let publisher = publisher as? NeverPublisher<AnyObject> {
+        }
+        else if let publisher = publisher as? JustPublisher<AnyObject> {
+            (publisher.values as! NSArray).forEach { closure($0 as! V) }
         } else {
             PublisherExtensionsKt.subscribe(publisher, cancellableManager: cancellableManager) {(value: Any?) in
                 if Thread.current.isMainThread {
@@ -61,29 +65,19 @@ extension NSObject {
             strongSelf[keyPath: keyPath] = newValue
         }
     }
-}
 
-extension NSObject {
     public func observe<V>(_ concretePublisher: ConcretePublisher<V>, toClosure closure: @escaping ((V) -> Void)) {
-        if let publisher = publisher as? JustPublisher<AnyObject> {
-            publisher.values.forEach { closure($0 as! V) }
-        } else {
-            observe(cancellableManager: trikotInternalPublisherCancellableManager, concretePublisher: concretePublisher, toClosure: closure)
-        }
+        observe(cancellableManager: trikotInternalPublisherCancellableManager, concretePublisher: concretePublisher, toClosure: closure)
     }
 
     public func observe<V>(cancellableManager: CancellableManager, concretePublisher: ConcretePublisher<V>, toClosure closure: @escaping ((V) -> Void)) {
-        if let publisher = publisher as? JustPublisher<AnyObject> {
-            publisher.values.forEach { closure($0 as! V) }
-        } else {
-            PublisherExtensionsKt.subscribe(concretePublisher, cancellableManager: cancellableManager) {(value: Any?) in
-                if Thread.current.isMainThread {
+        PublisherExtensionsKt.subscribe(concretePublisher, cancellableManager: cancellableManager) {(value: Any?) in
+            if Thread.current.isMainThread {
+                closure(value as! V)
+            } else {
+                MrFreezeKt.freeze(objectToFreeze: value)
+                DispatchQueue.main.async {
                     closure(value as! V)
-                } else {
-                    MrFreezeKt.freeze(objectToFreeze: value)
-                    DispatchQueue.main.async {
-                        closure(value as! V)
-                    }
                 }
             }
         }

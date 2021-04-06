@@ -6,7 +6,10 @@ extension NSObject {
         var cancellableManager = CancellableManager()
 
         deinit {
-            cancellableManager.cancel()
+            let localCancellableManager = cancellableManager
+            DispatchQueue.main.async {
+                localCancellableManager.cancel()
+            }
         }
     }
 

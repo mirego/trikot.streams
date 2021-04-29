@@ -23,7 +23,7 @@ class TimerPublisher(
 
     private class TimerSubscription(
         private val downstream: Subscriber<in Long>
-    ): Subscription {
+    ) : Subscription {
 
         val timerRef = AtomicReference<Timer?>(null)
         private var cancelled by atomic(false)
@@ -47,6 +47,5 @@ class TimerPublisher(
                 cancelled = true
             }
         }
-
     }
 }

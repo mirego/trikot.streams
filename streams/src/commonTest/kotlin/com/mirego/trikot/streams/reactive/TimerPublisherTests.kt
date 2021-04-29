@@ -36,7 +36,8 @@ class TimerPublisherTests {
                 CancellableManager(),
                 onNext = { receivedResults.add(it) },
                 onError = {},
-                onCompleted = { completed = true })
+                onCompleted = { completed = true }
+            )
 
         assertEquals(1, timerFactory.singleCall)
         timers[0].executeBlock()
@@ -62,7 +63,8 @@ class TimerPublisherTests {
                 cancellableManager,
                 onNext = { receivedResults.add(it) },
                 onError = {},
-                onCompleted = { completed = true })
+                onCompleted = { completed = true }
+            )
 
         assertEquals(1, timerFactory.singleCall)
 

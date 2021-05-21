@@ -10,10 +10,10 @@ import kotlin.test.assertEquals
 class RejectProcessorTests {
     @Test
     fun rejectTrue() {
-        val publisher = Publishers.behaviorSubject("a")
+        val publisher = Publishers.behaviorSubject("")
         var value: String? = null
 
-        publisher.reject { true }.subscribe(CancellableManager()) {
+        publisher.reject { it.isBlank() }.subscribe(CancellableManager()) {
             value = it
         }
 
@@ -22,13 +22,13 @@ class RejectProcessorTests {
 
     @Test
     fun rejectFalse() {
-        val publisher = Publishers.behaviorSubject("a")
+        val publisher = Publishers.behaviorSubject("a string")
         var value: String? = null
 
-        publisher.reject { false }.subscribe(CancellableManager()) {
+        publisher.reject { it.isBlank() }.subscribe(CancellableManager()) {
             value = it
         }
 
-        assertEquals("a", value)
+        assertEquals("a string", value)
     }
 }

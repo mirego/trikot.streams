@@ -8,19 +8,21 @@ Pod::Spec.new do |spec|
   spec.author        = { "Martin Gagnon" => "mgagnon@mirego.com" }
   spec.source        = { :git => "https://github.com/mirego/trikot.streams.git", :tag => "#{spec.version}" }
   spec.static_framework = true
-  
+
   spec.dependency ENV['TRIKOT_FRAMEWORK_NAME']
 
   spec.default_subspec = 'streams'
-  
+
   spec.subspec 'streams' do |ss|
     ss.source_files  = "swift-extensions/*.swift"
     ss.ios.deployment_target = '8.0'
     ss.tvos.deployment_target = '9.0'
+    ss.osx.deployment_target = '10.11'
   end
 
   spec.subspec 'Combine' do |combine|
     combine.ios.deployment_target = '13.0'
+    combine.osx.deployment_target = '10.15'
     combine.source_files = 'swift-extensions/combine/*.swift'
   end
 

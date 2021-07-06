@@ -178,16 +178,8 @@ class TakeUntilProcessorTests {
     fun testMappingAnyException() {
         val publisher = Publishers.behaviorSubject("a")
 
-        @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
-        var receivedException: StreamsProcessorException? = null
-
         assertFailsWith(IllegalStateException::class) {
-            publisher.takeUntil { throw IllegalStateException() }.subscribe(
-                CancellableManager(),
-                onNext = {
-                },
-                onError = { receivedException = it as StreamsProcessorException }
-            )
+            publisher.takeUntil { throw IllegalStateException() }.subscribe(CancellableManager()) {}
         }
     }
 }

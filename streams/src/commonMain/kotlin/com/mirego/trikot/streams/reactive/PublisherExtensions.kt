@@ -280,7 +280,7 @@ fun <T> Publisher<T>.takeWhile(predicate: TakeWhileProcessorPredicate<T>): Publi
  * takeUntil(==3)
  * -------(1)---(2)-----(3)/----------->
  *
- * @see @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">http://reactivex.io/documentation/operators/takeuntil.html</a>
+ * @see <a href="http://reactivex.io/RxJava/javadoc/rx/Observable.html#takeUntil-rx.functions.Func1-">http://reactivex.io/RxJava/javadoc/rx/Observable.html#takeUntil-rx.functions.Func1-</a>
  * This is the predicate version, rather than receiving a second Publisher
  */
 fun <T> Publisher<T>.takeUntil(predicate: TakeUntilProcessorPredicate<T>): Publisher<T> {

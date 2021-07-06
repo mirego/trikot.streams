@@ -42,9 +42,9 @@ class TakeWhileProcessor<T>(
         }
 
         override fun onComplete() {
-            if (!hasCompleted) {
-                super.onComplete()
-            }
+            if (hasCompleted) return
+            hasCompleted = true
+            super.onComplete()
         }
     }
 }

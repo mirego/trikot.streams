@@ -256,8 +256,8 @@ fun <T> Publisher<T>.retryBackoff(
 }
 
 /**
- * The TakeWhile mirrors the source Observable until a specified condition becomes false,
- * at which point TakeWhile stops mirroring the source Observable and terminates its own Observable.
+ * The TakeWhile mirrors the source Publisher until a specified condition becomes false,
+ * at which point TakeWhile stops mirroring the source Publisher and complete its own Publisher.
  *
  * Marbles diagram :
  * -------(1)---(2)-----(3)-----(4)--|->

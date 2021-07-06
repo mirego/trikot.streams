@@ -42,6 +42,54 @@ class TakeUntilProcessorTests {
     }
 
     @Test
+    fun testCompletionBehaviorWhenPredicateIsTrueAndSourcePublisherIsCompleted() {
+        val publisher = Publishers.just(true)
+        val receivedResults = mutableListOf<Boolean>()
+        var completed = false
+
+        publisher
+            .takeUntil { it }
+            .subscribe(
+                CancellableManager(),
+                onNext = {
+                    receivedResults.add(it)
+                },
+                onError = {
+                },
+                onCompleted = {
+                    completed = true
+                }
+            )
+
+        assertEquals(listOf(true), receivedResults)
+        assertTrue(completed)
+    }
+
+    @Test
+    fun testCompletionBehaviorWhenPredicateIsFalseAndSourcePublisherIsCompleted() {
+        val publisher = Publishers.just(false)
+        val receivedResults = mutableListOf<Boolean>()
+        var completed = false
+
+        publisher
+            .takeUntil { it }
+            .subscribe(
+                CancellableManager(),
+                onNext = {
+                    receivedResults.add(it)
+                },
+                onError = {
+                },
+                onCompleted = {
+                    completed = true
+                }
+            )
+
+        assertEquals(listOf(false), receivedResults)
+        assertTrue(completed)
+    }
+
+    @Test
     fun testReconnectionWithTruePredicate() {
         val publisher = Publishers.publishSubject<String>()
         val receivedResults = mutableListOf<String>()

@@ -270,6 +270,7 @@ fun <T> Publisher<T>.retryBackoff(
  */
 fun <T> Publisher<T>.takeWhile(predicate: TakeWhileProcessorPredicate<T>): Publisher<T> {
     return TakeWhileProcessor(this, predicate)
+}
 
 /**
  * The TakeUntil uses a predicate function that evaluates the items emitted by the source Publisher

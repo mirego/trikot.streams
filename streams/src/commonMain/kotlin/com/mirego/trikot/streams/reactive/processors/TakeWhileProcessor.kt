@@ -7,7 +7,10 @@ import org.reactivestreams.Subscriber
 
 typealias TakeWhileProcessorPredicate<T> = (T) -> Boolean
 
-class TakeWhileProcessor<T>(parentPublisher: Publisher<T>, private val predicate: TakeWhileProcessorPredicate<T>) :
+class TakeWhileProcessor<T>(
+    parentPublisher: Publisher<T>,
+    private val predicate: TakeWhileProcessorPredicate<T>
+) :
     AbstractProcessor<T, T>(parentPublisher) {
 
     override fun createSubscription(subscriber: Subscriber<in T>): ProcessorSubscription<T, T> =
@@ -18,7 +21,7 @@ class TakeWhileProcessor<T>(parentPublisher: Publisher<T>, private val predicate
         private val predicate: TakeWhileProcessorPredicate<T>
     ) : ProcessorSubscription<T, T>(subscriber) {
 
-        private var hasCompleted : Boolean by atomic(false)
+        private var hasCompleted: Boolean by atomic(false)
 
         override fun onNext(t: T, subscriber: Subscriber<in T>) {
             if (hasCompleted) return

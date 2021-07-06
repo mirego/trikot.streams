@@ -35,10 +35,10 @@ import com.mirego.trikot.streams.reactive.processors.SkipProcessor
 import com.mirego.trikot.streams.reactive.processors.SubscribeOnProcessor
 import com.mirego.trikot.streams.reactive.processors.SwitchMapProcessor
 import com.mirego.trikot.streams.reactive.processors.SwitchMapProcessorBlock
-import com.mirego.trikot.streams.reactive.processors.TakeWhileProcessor
-import com.mirego.trikot.streams.reactive.processors.TakeWhileProcessorPredicate
 import com.mirego.trikot.streams.reactive.processors.TakeUntilProcessor
 import com.mirego.trikot.streams.reactive.processors.TakeUntilProcessorPredicate
+import com.mirego.trikot.streams.reactive.processors.TakeWhileProcessor
+import com.mirego.trikot.streams.reactive.processors.TakeWhileProcessorPredicate
 import com.mirego.trikot.streams.reactive.processors.ThreadLocalProcessor
 import com.mirego.trikot.streams.reactive.processors.TimeoutProcessor
 import com.mirego.trikot.streams.reactive.processors.WithCancellableManagerProcessor

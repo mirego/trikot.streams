@@ -42,7 +42,55 @@ class TakeWhileProcessorTests {
     }
 
     @Test
-    fun testReconnectionWithoutFalsePredicate() {
+    fun testCompletionBehaviorWhenPredicateIsTrueAndSourcePublisherIsCompleted() {
+        val publisher = Publishers.just(true)
+        val receivedResults = mutableListOf<Boolean>()
+        var completed = false
+
+        publisher
+            .takeWhile { it }
+            .subscribe(
+                CancellableManager(),
+                onNext = {
+                    receivedResults.add(it)
+                },
+                onError = {
+                },
+                onCompleted = {
+                    completed = true
+                }
+            )
+
+        assertEquals(listOf(true), receivedResults)
+        assertTrue(completed)
+    }
+
+    @Test
+    fun testCompletionBehaviorWhenPredicateIsFalseAndSourcePublisherIsCompleted() {
+        val publisher = Publishers.just(false)
+        val receivedResults = mutableListOf<Boolean>()
+        var completed = false
+
+        publisher
+            .takeWhile { it }
+            .subscribe(
+                CancellableManager(),
+                onNext = {
+                    receivedResults.add(it)
+                },
+                onError = {
+                },
+                onCompleted = {
+                    completed = true
+                }
+            )
+
+        assertEquals(emptyList(), receivedResults)
+        assertTrue(completed)
+    }
+
+    @Test
+    fun testReconnectionWhenPredicateIsAlwaysTrue() {
         val publisher = Publishers.publishSubject<String>()
         val receivedResults = mutableListOf<String>()
 
@@ -77,7 +125,7 @@ class TakeWhileProcessorTests {
     }
 
     @Test
-    fun testReconnectionWithFalsePredicate() {
+    fun testReconnectionWhenPredicateIsFalse() {
         val publisher = Publishers.publishSubject<String>()
         val receivedResults = mutableListOf<String>()
 

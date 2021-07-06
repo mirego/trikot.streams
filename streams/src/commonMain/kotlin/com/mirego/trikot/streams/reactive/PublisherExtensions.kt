@@ -264,7 +264,7 @@ fun <T> Publisher<T>.retryBackoff(
  * takeWhile(!=3)
  * -------(1)---(2)------|------------->
  *
- * @see @see <a href="http://reactivex.io/documentation/operators/takewhile.html">http://reactivex.io/documentation/operators/takewhile.html</a>
+ * @see <a href="http://reactivex.io/documentation/operators/takewhile.html">http://reactivex.io/documentation/operators/takewhile.html</a>
  */
 fun <T> Publisher<T>.takeWhile(predicate: TakeWhileProcessorPredicate<T>): Publisher<T> {
     return TakeWhileProcessor(this, predicate)

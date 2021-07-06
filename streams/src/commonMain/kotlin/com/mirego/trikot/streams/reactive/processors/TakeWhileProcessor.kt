@@ -10,8 +10,7 @@ typealias TakeWhileProcessorPredicate<T> = (T) -> Boolean
 class TakeWhileProcessor<T>(
     parentPublisher: Publisher<T>,
     private val predicate: TakeWhileProcessorPredicate<T>
-) :
-    AbstractProcessor<T, T>(parentPublisher) {
+) : AbstractProcessor<T, T>(parentPublisher) {
 
     override fun createSubscription(subscriber: Subscriber<in T>): ProcessorSubscription<T, T> =
         TakeWhileProcessorSubscription(subscriber, predicate)

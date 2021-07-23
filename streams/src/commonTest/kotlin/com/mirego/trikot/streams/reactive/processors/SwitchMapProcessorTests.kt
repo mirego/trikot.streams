@@ -3,6 +3,7 @@ package com.mirego.trikot.streams.reactive.processors
 import com.mirego.trikot.streams.cancellable.CancellableManager
 import com.mirego.trikot.streams.reactive.MockPublisher
 import com.mirego.trikot.streams.reactive.Publishers
+import com.mirego.trikot.streams.reactive.RefreshablePublisher
 import com.mirego.trikot.streams.reactive.StreamsProcessorException
 import com.mirego.trikot.streams.reactive.subscribe
 import com.mirego.trikot.streams.reactive.switchMap
@@ -53,7 +54,11 @@ class SwitchMapProcessorTests {
         val returnedPublisher = Publishers.behaviorSubject("b")
         var isCompleted = false
 
-        switchMappedPublisher.switchMap { returnedPublisher }.subscribe(CancellableManager(), onNext = {}, onError = {}, onCompleted = { isCompleted = true })
+        switchMappedPublisher.switchMap { returnedPublisher }.subscribe(
+            CancellableManager(),
+            onNext = {},
+            onError = {},
+            onCompleted = { isCompleted = true })
         switchMappedPublisher.complete()
         assertFalse { isCompleted }
     }
@@ -64,7 +69,11 @@ class SwitchMapProcessorTests {
         val returnedPublisher = Publishers.behaviorSubject("b")
         var isCompleted = false
 
-        switchMappedPublisher.switchMap { returnedPublisher }.subscribe(CancellableManager(), onNext = {}, onError = {}, onCompleted = { isCompleted = true })
+        switchMappedPublisher.switchMap { returnedPublisher }.subscribe(
+            CancellableManager(),
+            onNext = {},
+            onError = {},
+            onCompleted = { isCompleted = true })
         returnedPublisher.complete()
         assertFalse { isCompleted }
     }
@@ -75,7 +84,11 @@ class SwitchMapProcessorTests {
         val returnedPublisher = Publishers.behaviorSubject("b")
         var isCompleted = false
 
-        switchMappedPublisher.switchMap { returnedPublisher }.subscribe(CancellableManager(), onNext = {}, onError = {}, onCompleted = { isCompleted = true })
+        switchMappedPublisher.switchMap { returnedPublisher }.subscribe(
+            CancellableManager(),
+            onNext = {},
+            onError = {},
+            onCompleted = { isCompleted = true })
         switchMappedPublisher.complete()
         returnedPublisher.complete()
         assertTrue { isCompleted }
@@ -120,9 +133,29 @@ class SwitchMapProcessorTests {
         val childPublisher = Publishers.behaviorSubject("a").also { it.error = Throwable() }
 
         var errorCallCount = 0
-        publisher.switchMap { childPublisher }.subscribe(CancellableManager(), {}, { errorCallCount ++ })
+        publisher.switchMap { childPublisher }
+            .subscribe(CancellableManager(), {}, { errorCallCount++ })
         publisher.value = "b"
 
         assertEquals(1, errorCallCount)
+    }
+
+    @Test
+    fun testCancellationHappensBeforeResubscribe() {
+        var executionCount = 0
+        val publisher = Publishers.behaviorSubject("a")
+        val refreshablePublisher = RefreshablePublisher({ _, _ ->
+            executionCount++
+            Publishers.behaviorSubject(1)
+        })
+
+        publisher.switchMap {
+            refreshablePublisher.refresh()
+            refreshablePublisher
+        }.subscribe(CancellableManager()) {}
+
+        publisher.value = "b"
+
+        assertEquals(2, executionCount)
     }
 }

@@ -58,7 +58,8 @@ class SwitchMapProcessorTests {
             CancellableManager(),
             onNext = {},
             onError = {},
-            onCompleted = { isCompleted = true })
+            onCompleted = { isCompleted = true }
+        )
         switchMappedPublisher.complete()
         assertFalse { isCompleted }
     }
@@ -73,7 +74,8 @@ class SwitchMapProcessorTests {
             CancellableManager(),
             onNext = {},
             onError = {},
-            onCompleted = { isCompleted = true })
+            onCompleted = { isCompleted = true }
+        )
         returnedPublisher.complete()
         assertFalse { isCompleted }
     }
@@ -88,7 +90,8 @@ class SwitchMapProcessorTests {
             CancellableManager(),
             onNext = {},
             onError = {},
-            onCompleted = { isCompleted = true })
+            onCompleted = { isCompleted = true }
+        )
         switchMappedPublisher.complete()
         returnedPublisher.complete()
         assertTrue { isCompleted }

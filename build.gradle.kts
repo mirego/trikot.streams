@@ -7,8 +7,6 @@ buildscript {
 
     dependencies {
         classpath("com.android.tools.build:gradle:4.1.3")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${project.extra["kotlin_version"]}")
-        classpath("org.jlleitschuh.gradle:ktlint-gradle:9.4.1")
     }
 }
 
@@ -19,5 +17,12 @@ repositories {
 allprojects {
     repositories {
         google()
+        mavenLocal()
+        mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev")
+        maven("https://kotlin.bintray.com/kotlinx")
+        maven("https://jitpack.io")
+        maven("https://plugins.gradle.org/m2/")
+        maven("https://s3.amazonaws.com/mirego-maven/public")
     }
 }

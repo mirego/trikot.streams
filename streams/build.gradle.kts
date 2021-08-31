@@ -1,19 +1,9 @@
 plugins {
-    kotlin("multiplatform")
+    id("org.jetbrains.kotlin.multiplatform").version("1.6.0-M1-139")
     id("com.android.library")
-    id("org.jlleitschuh.gradle.ktlint")
+    id("org.jlleitschuh.gradle.ktlint").version("10.1.0")
     id("mirego.release").version("2.0")
     id("mirego.publish").version("1.0")
-}
-
-repositories {
-    google()
-    mavenLocal()
-    mavenCentral()
-    maven("https://kotlin.bintray.com/kotlinx")
-    maven("https://jitpack.io")
-    maven("https://plugins.gradle.org/m2/")
-    maven("https://s3.amazonaws.com/mirego-maven/public")
 }
 
 group = "com.mirego.trikot"

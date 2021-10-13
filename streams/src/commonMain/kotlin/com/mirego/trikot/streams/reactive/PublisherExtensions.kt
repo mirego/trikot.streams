@@ -287,3 +287,8 @@ fun <T> Publisher<T>.takeWhile(predicate: TakeWhileProcessorPredicate<T>): Publi
 fun <T> Publisher<T>.takeUntil(predicate: TakeUntilProcessorPredicate<T>): Publisher<T> {
     return TakeUntilProcessor(this, predicate)
 }
+
+fun <T> Publisher<T>.every(
+    delay: Duration,
+    timerFactory: TimerFactory = FoundationConfiguration.timerFactory
+): Publisher<T> = Publishers.repeat(delay, timerFactory) { this }

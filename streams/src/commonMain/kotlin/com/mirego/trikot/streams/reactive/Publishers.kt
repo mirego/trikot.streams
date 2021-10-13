@@ -94,7 +94,6 @@ object Publishers {
         timerFactory: TimerFactory = FoundationConfiguration.timerFactory,
         publisherBlock: () -> Publisher<T>
     ): Publisher<T> = RepeatablePublisher(delay, timerFactory).switchMap { publisherBlock() }
-
 }
 
 fun <T> T.asPublisher(): Publisher<T> = Publishers.behaviorSubject(this)

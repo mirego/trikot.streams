@@ -5,7 +5,6 @@ import com.mirego.trikot.streams.utils.MockTimer
 import com.mirego.trikot.streams.utils.MockTimerFactory
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.time.Duration
 
 class RepeatablePublisherTests {

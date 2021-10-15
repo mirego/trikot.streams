@@ -1,5 +1,7 @@
 package com.mirego.trikot.streams.reactive
 
+import com.mirego.trikot.foundation.concurrent.AtomicReference
+import com.mirego.trikot.foundation.concurrent.setOrThrow
 import com.mirego.trikot.streams.cancellable.CancellableManager
 import com.mirego.trikot.streams.utils.MockTimer
 import com.mirego.trikot.streams.utils.MockTimerFactory
@@ -22,9 +24,9 @@ class RepeatablePublisherTests {
 
     @Test
     fun blockIsReexecutedIfResubscribed() {
-        var executionCount = 0
+        var executionCount = AtomicReference(0)
         val repeatable = Publishers.repeat(Duration.minutes(1)) {
-            executionCount++
+            executionCount.setOrThrow(executionCount.value + 1)
             Publishers.behaviorSubject<String>()
         }
         val cancellableManager = CancellableManager()
@@ -33,25 +35,25 @@ class RepeatablePublisherTests {
         cancellableManager.cancel()
         repeatable.subscribe(CancellableManager()) {}
 
-        assertEquals(2, executionCount)
+        assertEquals(2, executionCount.value)
     }
 
     @Test
     fun blockIsReExecutedWhenRepeated() {
-        var executions = 0
+        var executions = AtomicReference(0)
         var timer: MockTimer? = null
         val timerFactory = MockTimerFactory { _, duration ->
             assertEquals(Duration.minutes(1), duration)
             MockTimer().also { timer = it }
         }
         val repeatable = Publishers.repeat(Duration.minutes(1), timerFactory) {
-            executions++
+            executions.setOrThrow(executions.value + 1)
             Publishers.behaviorSubject<String>()
         }
 
         repeatable.subscribe(CancellableManager()) {}
         timer?.executeBlock()
 
-        kotlin.test.assertTrue { executions == 2 }
+        assertEquals(2, executions.value)
     }
 }

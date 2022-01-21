@@ -1,3 +1,6 @@
+# :warning: Warning: this project as been moved
+See [the new trikot repository](https://github.com/mirego/trikot) for releases starting from 3.0.0.
+
 # Trikot.streams
 
 Elegant implementation of ReactiveStreams for Kotlin Multiplatform.
